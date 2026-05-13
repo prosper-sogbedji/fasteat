@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import '../../app_routes.dart';
+import '../../providers/auth_provider.dart';
 import '../../theme/app_theme.dart';
 
 class InscriptionScreen extends StatefulWidget {
@@ -12,26 +14,37 @@ class InscriptionScreen extends StatefulWidget {
 }
 
 class _InscriptionScreenState extends State<InscriptionScreen> {
+  /// 0: identité + téléphone, 1: OTP WhatsApp, 2: mot de passe
   int step = 0;
   bool hidePassword = true;
   bool hidePasswordConfirm = true;
-  final nomCtrl = TextEditingController();
-  final prenomCtrl = TextEditingController();
-  final phoneCtrl = TextEditingController();
-  final emailCtrl = TextEditingController();
+  final nomCompletCtrl = TextEditingController();
+  final phoneLocalCtrl = TextEditingController();
   final passCtrl = TextEditingController();
   final passConfirmCtrl = TextEditingController();
-  String sexe = 'Masculin';
+  final List<TextEditingController> _otpCtrls = List.generate(6, (_) => TextEditingController());
+  final List<FocusNode> _otpNodes = List.generate(6, (_) => FocusNode());
+
+  static const _indicatif = '+229';
 
   @override
   void dispose() {
-    nomCtrl.dispose();
-    prenomCtrl.dispose();
-    phoneCtrl.dispose();
-    emailCtrl.dispose();
+    nomCompletCtrl.dispose();
+    phoneLocalCtrl.dispose();
     passCtrl.dispose();
     passConfirmCtrl.dispose();
+    for (final c in _otpCtrls) {
+      c.dispose();
+    }
+    for (final n in _otpNodes) {
+      n.dispose();
+    }
     super.dispose();
+  }
+
+  String get _fullPhone {
+    final d = phoneLocalCtrl.text.replaceAll(RegExp(r'\s'), '');
+    return '$_indicatif $d';
   }
 
   @override
@@ -80,8 +93,8 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          if (step == 0) ..._stepInfos(),
-          if (step == 1) ..._stepImageProfil(),
+          if (step == 0) ..._stepIdentite(),
+          if (step == 1) ..._stepOtpWhatsapp(),
           if (step == 2) ..._stepPassword(),
           const SizedBox(height: 16),
           Row(
@@ -107,26 +120,9 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
               Expanded(
                 child: FilledButton(
                   onPressed: _onPrimary,
-                  child: Text(step == 0 ? 'Suivant' : step == 1 ? 'Ignorer' : "S'inscrire"),
+                  child: Text(step == 0 ? 'Suivant' : step == 1 ? 'Verifier' : "S'inscrire"),
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            'Other sign in options',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-          ),
-          const SizedBox(height: 10),
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _SocialIcon(icon: Icons.facebook, color: Color(0xFF1877F2)),
-              SizedBox(width: 12),
-              _SocialIcon(icon: Icons.g_mobiledata_rounded, color: Color(0xFFEA4335)),
-              SizedBox(width: 12),
-              _SocialIcon(icon: Icons.apple, color: Colors.black),
             ],
           ),
         ],
@@ -134,55 +130,125 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
     );
   }
 
-  List<Widget> _stepInfos() {
+  List<Widget> _stepIdentite() {
     return [
-      _LabelField(label: 'Nom', hint: 'Entrez votre nom', controller: nomCtrl),
-      const SizedBox(height: 10),
-      _LabelField(label: 'Prenoms', hint: 'Entrez vos prenoms', controller: prenomCtrl),
-      const SizedBox(height: 10),
-      const Align(alignment: Alignment.centerLeft, child: Text('Sexe', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600))),
-      const SizedBox(height: 6),
-      DropdownButtonFormField<String>(
-        initialValue: sexe,
-        items: const [
-          DropdownMenuItem(value: 'Masculin', child: Text('Masculin')),
-          DropdownMenuItem(value: 'Feminin', child: Text('Feminin')),
-        ],
-        onChanged: (v) => setState(() => sexe = v ?? 'Masculin'),
-        decoration: const InputDecoration(hintText: 'Choisir le sexe'),
+      _LabelField(label: 'Nom complet', hint: 'Nom et prénom', controller: nomCompletCtrl),
+      const SizedBox(height: 14),
+      const Align(
+        alignment: Alignment.centerLeft,
+        child: Text('Numéro de téléphone', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
       ),
-      const SizedBox(height: 10),
-      _LabelField(label: 'Adresse mail', hint: 'nomprenom@gmail.com', controller: emailCtrl),
-      const SizedBox(height: 10),
-      _LabelField(label: 'Telephone', hint: 'Entrez votre numero de telephone', controller: phoneCtrl),
+      const SizedBox(height: 6),
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF3F4F6),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: const Text(_indicatif, style: TextStyle(fontWeight: FontWeight.w700)),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: TextField(
+              controller: phoneLocalCtrl,
+              keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(
+                hintText: '90 00 00 00',
+                hintStyle: TextStyle(color: Color(0xFF98A2B3), fontSize: 13),
+              ),
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 8),
+      const Text(
+        'L’indicatif +229 est pré-rempli. Saisissez votre numéro sans le répéter.',
+        style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+      ),
     ];
   }
 
-  List<Widget> _stepImageProfil() {
-    return const [
-      SizedBox(height: 20),
-      Center(
-        child: CircleAvatar(
-          radius: 68,
-          backgroundColor: Color(0xFFE8F0FF),
-          child: Icon(Icons.add_photo_alternate_outlined, size: 44, color: Color(0xFF246BFD)),
+  List<Widget> _stepOtpWhatsapp() {
+    return [
+      const SizedBox(height: 8),
+      CircleAvatar(
+        radius: 28,
+        backgroundColor: const Color(0xFF25D366).withValues(alpha: 0.15),
+        child: const Icon(Icons.chat_rounded, color: Color(0xFF25D366), size: 30),
+      ),
+      const SizedBox(height: 12),
+      const Text(
+        'Vérification WhatsApp',
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+      ),
+      const SizedBox(height: 8),
+      Text(
+        'Un code à 6 chiffres a été envoyé sur WhatsApp au numéro\n$_fullPhone',
+        textAlign: TextAlign.center,
+        style: const TextStyle(color: AppColors.textSecondary, height: 1.35),
+      ),
+      const SizedBox(height: 18),
+      Row(
+        children: List.generate(
+          6,
+          (i) => Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 3),
+              child: TextField(
+                controller: _otpCtrls[i],
+                focusNode: _otpNodes[i],
+                textAlign: TextAlign.center,
+                maxLength: 1,
+                keyboardType: TextInputType.number,
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                onChanged: (v) {
+                  if (v.isNotEmpty && i < 5) {
+                    _otpNodes[i + 1].requestFocus();
+                  }
+                },
+                decoration: const InputDecoration(
+                  counterText: '',
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: EdgeInsets.symmetric(vertical: 12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
-      SizedBox(height: 16),
-      Text(
-        'Importez une image de profil',
-        textAlign: TextAlign.center,
-        style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF475467)),
+      const SizedBox(height: 12),
+      TextButton(
+        onPressed: () => _showInfo('Renvoi simulé : un nouveau code serait envoyé sur WhatsApp.'),
+        child: const Text('Renvoyer le code sur WhatsApp'),
       ),
-      SizedBox(height: 44),
     ];
   }
 
   List<Widget> _stepPassword() {
     return [
+      const Text(
+        'Choisissez votre mot de passe',
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+      ),
+      const SizedBox(height: 8),
+      const Text(
+        'Sécurisez votre compte avec un mot de passe fort.',
+        style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+      ),
+      const SizedBox(height: 16),
       _LabelField(
         label: 'Mot de passe',
-        hint: 'Entrez votre mot de passe',
+        hint: 'Au moins 8 caractères',
         controller: passCtrl,
         obscureText: hidePassword,
         suffix: IconButton(
@@ -192,8 +258,8 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
       ),
       const SizedBox(height: 10),
       _LabelField(
-        label: 'Confirmer mot de passe',
-        hint: 'Entrez votre mot de passe',
+        label: 'Confirmer le mot de passe',
+        hint: 'Répétez le mot de passe',
         controller: passConfirmCtrl,
         obscureText: hidePasswordConfirm,
         suffix: IconButton(
@@ -201,7 +267,6 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
           icon: Icon(hidePasswordConfirm ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 18),
         ),
       ),
-      const SizedBox(height: 40),
     ];
   }
 
@@ -219,29 +284,36 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
 
   void _onPrimary() {
     if (step == 0) {
-      final nom = nomCtrl.text.trim();
-      final prenom = prenomCtrl.text.trim();
-      final phone = phoneCtrl.text.trim();
-      final email = emailCtrl.text.trim();
-      final isEmail = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email);
-      final isPhone = RegExp(r'^[0-9+\s]{8,}$').hasMatch(phone);
-      if ([nom, prenom, phone, email].any((e) => e.isEmpty)) {
-        _showError('Veuillez remplir tous les champs.');
+      final nom = nomCompletCtrl.text.trim();
+      final digits = phoneLocalCtrl.text.replaceAll(RegExp(r'\s'), '');
+      final isPhone = RegExp(r'^[0-9]{8,10}$').hasMatch(digits);
+      if (nom.length < 3) {
+        _showError('Veuillez saisir votre nom complet.');
         return;
       }
       if (!isPhone) {
-        _showError('Numero de telephone invalide.');
-        return;
-      }
-      if (!isEmail) {
-        _showError('Adresse email invalide.');
+        _showError('Numéro invalide : 8 à 10 chiffres après +229.');
         return;
       }
       setState(() => step = 1);
+      // send OTP via WhatsApp (mock)
+      final phone = _fullPhone;
+      WidgetsBinding.instance.addPostFrameCallback((_) => _otpNodes.first.requestFocus());
+      Future.microtask(() async {
+        final ok = await context.read<AuthProvider>().sendOtpWhatsapp(phone);
+        if (!ok) {
+          _showError('Impossible d\'envoyer le code sur WhatsApp.');
+        }
+      });
       return;
     }
 
     if (step == 1) {
+      final code = _otpCtrls.map((c) => c.text).join();
+      if (code.length != 6 || !RegExp(r'^[0-9]{6}$').hasMatch(code)) {
+        _showError('Saisissez le code à 6 chiffres reçu sur WhatsApp.');
+        return;
+      }
       setState(() => step = 2);
       return;
     }
@@ -256,13 +328,16 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
       _showError('Les mots de passe ne correspondent pas.');
       return;
     }
-    context.go(AppRoutes.otp);
+    context.read<AuthProvider>().loginMock();
+    context.go(AppRoutes.home);
   }
 
   void _showError(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg)),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  void _showInfo(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 }
 
@@ -298,27 +373,6 @@ class _LabelField extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _SocialIcon extends StatelessWidget {
-  const _SocialIcon({required this.icon, required this.color});
-
-  final IconData icon;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 38,
-      height: 38,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Icon(icon, size: 19, color: color),
     );
   }
 }

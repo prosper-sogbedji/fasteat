@@ -54,12 +54,12 @@ class _OtpScreenState extends State<OtpScreen> {
               const CircleAvatar(
                 radius: 34,
                 backgroundColor: Color(0xFFFCE8EC),
-                child: Icon(Icons.sms_outlined, color: AppColors.primary, size: 28),
+                child: Icon(Icons.chat_rounded, color: Color(0xFF25D366), size: 28),
               ),
               const SizedBox(height: 14),
               const Text('Verification du numero', style: TextStyle(fontSize: 29, fontWeight: FontWeight.w800, height: 1)),
               const SizedBox(height: 6),
-              const Text('Code envoye au +229 XX XX XX XX', style: TextStyle(color: AppColors.textSecondary)),
+              const Text('Code envoye sur WhatsApp au +229 XX XX XX XX', style: TextStyle(color: AppColors.textSecondary)),
               const SizedBox(height: 16),
               Row(
                 children: List.generate(

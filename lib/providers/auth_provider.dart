@@ -21,6 +21,12 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Placeholder for sending OTP via WhatsApp. In this mock app this just waits briefly.
+  Future<bool> sendOtpWhatsapp(String phone) async {
+    await Future.delayed(const Duration(milliseconds: 400));
+    return true;
+  }
+
   Future<void> logoutMock() async {
     _isConnected = false;
     await _save();

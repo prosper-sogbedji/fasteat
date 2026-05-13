@@ -10,7 +10,7 @@ class Restaurant {
     required this.livraison,
     required this.qrCode,
     required this.abonnement,
-    required this.image,
+    required this.images,
     this.certifie = false,
   });
 
@@ -24,6 +24,9 @@ class Restaurant {
   final bool livraison;
   final bool qrCode;
   final String abonnement;
-  final String image;
+  /// Plusieurs visuels pour carrousel (accueil, etc.). Le premier sert d’image principale.
+  final List<String> images;
   final bool certifie;
+
+  String get image => images.isNotEmpty ? images.first : '';
 }

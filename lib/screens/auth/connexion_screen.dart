@@ -15,12 +15,12 @@ class ConnexionScreen extends StatefulWidget {
 
 class _ConnexionScreenState extends State<ConnexionScreen> {
   bool hide = true;
-  final identifiantCtrl = TextEditingController();
+  final phoneCtrl = TextEditingController();
   final passwordCtrl = TextEditingController();
 
   @override
   void dispose() {
-    identifiantCtrl.dispose();
+    phoneCtrl.dispose();
     passwordCtrl.dispose();
     super.dispose();
   }
@@ -67,14 +67,32 @@ class _ConnexionScreenState extends State<ConnexionScreen> {
                       style: TextStyle(color: AppColors.textSecondary),
                     ),
                     const SizedBox(height: 18),
-                    const Text('Numéro de téléphone ou Email', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12)),
+                    const Text('Numéro de téléphone', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12)),
                     const SizedBox(height: 6),
-                    TextField(
-                      controller: identifiantCtrl,
-                      decoration: InputDecoration(
-                        hintText: '01 00 00 00 00 ou email@exemple.com',
-                        prefixIcon: Icon(Icons.person_outline, size: 18),
-                      ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF3F4F6),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: AppColors.border),
+                          ),
+                          child: const Text('+229', style: TextStyle(fontWeight: FontWeight.w700)),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: TextField(
+                            controller: phoneCtrl,
+                            keyboardType: TextInputType.phone,
+                            decoration: const InputDecoration(
+                              hintText: '90 00 00 00',
+                              prefixIcon: Icon(Icons.phone_android_rounded, size: 18),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 12),
                     const Text('Mot de passe', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12)),
@@ -105,12 +123,11 @@ class _ConnexionScreenState extends State<ConnexionScreen> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                       onPressed: () {
-                        final identifiant = identifiantCtrl.text.trim();
+                        final digits = phoneCtrl.text.replaceAll(RegExp(r'\s'), '');
                         final pass = passwordCtrl.text.trim();
-                        final isEmail = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(identifiant);
-                        final isPhone = RegExp(r'^[0-9+\s]{8,}$').hasMatch(identifiant);
-                        if (!isEmail && !isPhone) {
-                          _showError('Veuillez saisir un email ou numero valide.');
+                        final isPhone = RegExp(r'^[0-9]{8,10}$').hasMatch(digits);
+                        if (!isPhone) {
+                          _showError('Veuillez saisir un numéro valide (8 à 10 chiffres après +229).');
                           return;
                         }
                         if (pass.length < 6) {
@@ -121,41 +138,6 @@ class _ConnexionScreenState extends State<ConnexionScreen> {
                         context.go(AppRoutes.home);
                       },
                       child: const Text('Se connecter'),
-                    ),
-                    const SizedBox(height: 12),
-                    const Row(
-                      children: [
-                        Expanded(child: Divider()),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: Text('OU', style: TextStyle(fontWeight: FontWeight.w700, color: Colors.black54)),
-                        ),
-                        Expanded(child: Divider()),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: () {},
-                            icon: const Icon(Icons.g_mobiledata_rounded, color: Color(0xFFEA4335)),
-                            label: const Text('Google'),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: FilledButton.icon(
-                            style: FilledButton.styleFrom(
-                              backgroundColor: const Color(0xFF1877F2),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            ),
-                            onPressed: () {},
-                            icon: const Icon(Icons.facebook, size: 16),
-                            label: const Text('Facebook'),
-                          ),
-                        ),
-                      ],
                     ),
                   ],
                 ),

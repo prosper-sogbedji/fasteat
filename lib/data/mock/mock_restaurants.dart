@@ -12,7 +12,11 @@ const mockRestaurants = <Restaurant>[
     livraison: true,
     qrCode: true,
     abonnement: 'pro',
-    image: 'assets/images/resto_real_1.jpg',
+    images: [
+      'assets/images/resto_real_1.jpg',
+      'assets/images/plat_real_1.jpg',
+      'assets/images/banner_promo.jpg',
+    ],
     certifie: true,
   ),
   Restaurant(
@@ -26,7 +30,11 @@ const mockRestaurants = <Restaurant>[
     livraison: true,
     qrCode: true,
     abonnement: 'starter',
-    image: 'assets/images/resto_real_2.jpg',
+    images: [
+      'assets/images/resto_real_2.jpg',
+      'assets/images/plat_real_2.jpg',
+      'assets/images/onboard_2.png',
+    ],
   ),
   Restaurant(
     id: 'r3',
@@ -39,7 +47,11 @@ const mockRestaurants = <Restaurant>[
     livraison: false,
     qrCode: true,
     abonnement: 'pro',
-    image: 'assets/images/resto_real_1.jpg',
+    images: [
+      'assets/images/resto_real_1.jpg',
+      'assets/images/plat_real_2.jpg',
+      'assets/images/onboard_3.png',
+    ],
     certifie: true,
   ),
   Restaurant(
@@ -53,7 +65,11 @@ const mockRestaurants = <Restaurant>[
     livraison: true,
     qrCode: false,
     abonnement: 'starter',
-    image: 'assets/images/resto_real_2.jpg',
+    images: [
+      'assets/images/resto_real_2.jpg',
+      'assets/images/plat_real_1.jpg',
+      'assets/images/mockup_home_restaurant.png',
+    ],
   ),
   Restaurant(
     id: 'r5',
@@ -66,7 +82,11 @@ const mockRestaurants = <Restaurant>[
     livraison: true,
     qrCode: true,
     abonnement: 'premium',
-    image: 'assets/images/resto_real_1.jpg',
+    images: [
+      'assets/images/resto_real_1.jpg',
+      'assets/images/banner_promo.jpg',
+      'assets/images/plat_real_1.jpg',
+    ],
     certifie: true,
   ),
 ];

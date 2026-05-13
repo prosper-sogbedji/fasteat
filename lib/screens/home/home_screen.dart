@@ -6,6 +6,7 @@ import '../../app_routes.dart';
 import '../../data/mock/mock_restaurants.dart';
 import '../../models/commande.dart';
 import '../../models/restaurant.dart';
+import '../../providers/favorites_provider.dart';
 import '../../providers/flow_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common/bottom_nav_bar.dart';
@@ -123,7 +124,7 @@ class HomeScreen extends StatelessWidget {
               itemCount: mockRestaurants.length,
               itemBuilder: (context, index) {
                 final r = mockRestaurants[index];
-                return _restaurantTile(context, r);
+                return _HomeRestaurantTile(restaurant: r);
               },
             ),
           ],
@@ -176,8 +177,39 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _restaurantTile(BuildContext context, Restaurant r) {
+class _HomeRestaurantTile extends StatefulWidget {
+  const _HomeRestaurantTile({required this.restaurant});
+
+  final Restaurant restaurant;
+
+  @override
+  State<_HomeRestaurantTile> createState() => _HomeRestaurantTileState();
+}
+
+class _HomeRestaurantTileState extends State<_HomeRestaurantTile> {
+  late final PageController _pageController;
+  int _pageIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final r = widget.restaurant;
+    final imgs = r.images.isNotEmpty ? r.images : [r.image];
+    final fav = context.watch<FavoritesProvider>();
+
     return InkWell(
       borderRadius: BorderRadius.circular(12),
       onTap: () => context.push('${AppRoutes.restaurant}/${r.id}'),
@@ -190,13 +222,71 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-              child: ImageFallback(
-                path: r.image,
-                label: r.nom,
-                height: 108,
-                radius: 0,
+            SizedBox(
+              height: 108,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    PageView.builder(
+                      controller: _pageController,
+                      onPageChanged: (i) => setState(() => _pageIndex = i),
+                      itemCount: imgs.length,
+                      itemBuilder: (context, i) {
+                        return ImageFallback(
+                          path: imgs[i],
+                          label: r.nom,
+                          height: 108,
+                          radius: 0,
+                        );
+                      },
+                    ),
+                    Positioned(
+                      right: 2,
+                      top: 2,
+                      child: Material(
+                        color: Colors.white.withValues(alpha: 0.94),
+                        shape: const CircleBorder(),
+                        clipBehavior: Clip.antiAlias,
+                        child: InkWell(
+                          onTap: () => context.read<FavoritesProvider>().toggle(r.id),
+                          customBorder: const CircleBorder(),
+                          child: SizedBox(
+                            width: 36,
+                            height: 36,
+                            child: Icon(
+                              fav.isFavorite(r.id) ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                              size: 20,
+                              color: fav.isFavorite(r.id) ? const Color(0xFFE63946) : Colors.black54,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (imgs.length > 1)
+                      Positioned(
+                        left: 0,
+                        right: 0,
+                        bottom: 6,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(
+                            imgs.length,
+                            (i) => Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 2),
+                              width: 5,
+                              height: 5,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: _pageIndex == i ? Colors.white : Colors.white54,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
             Padding(

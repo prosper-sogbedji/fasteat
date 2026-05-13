@@ -15,9 +15,13 @@ class FlowProvider extends ChangeNotifier {
   static const _kAdresse = 'flow.adresse';
   static const _kTable = 'flow.table';
   static const _kHeureRecup = 'flow.heure.recup';
+  static const _kNumeroPaiement = 'flow.numero.paiement';
 
   ModeCommande modeCommande = ModeCommande.programmee;
   PaiementMethode paiementMethode = PaiementMethode.mtn;
+
+  /// Numéro mobile money / opérateur utilisé pour ce paiement (saisie utilisateur).
+  String numeroPaiement = '';
 
   String adresseLivraison = 'Quartier Haie Vive, Rue 402';
   String codeTableQr = 'TABLE-3';
@@ -55,6 +59,12 @@ class FlowProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> setNumeroPaiement(String value) async {
+    numeroPaiement = value;
+    await _save();
+    notifyListeners();
+  }
+
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
     final modeName = prefs.getString(_kMode);
@@ -70,6 +80,7 @@ class FlowProvider extends ChangeNotifier {
     adresseLivraison = prefs.getString(_kAdresse) ?? adresseLivraison;
     codeTableQr = prefs.getString(_kTable) ?? codeTableQr;
     heureRecuperation = prefs.getString(_kHeureRecup) ?? heureRecuperation;
+    numeroPaiement = prefs.getString(_kNumeroPaiement) ?? numeroPaiement;
     notifyListeners();
   }
 
@@ -80,5 +91,6 @@ class FlowProvider extends ChangeNotifier {
     await prefs.setString(_kAdresse, adresseLivraison);
     await prefs.setString(_kTable, codeTableQr);
     await prefs.setString(_kHeureRecup, heureRecuperation);
+    await prefs.setString(_kNumeroPaiement, numeroPaiement);
   }
 }

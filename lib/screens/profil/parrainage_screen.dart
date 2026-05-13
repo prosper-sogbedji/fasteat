@@ -52,11 +52,11 @@ class ParrainageScreen extends StatelessWidget {
               Expanded(
                 child: Card(
                   child: Padding(
-                    padding: EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(12),
                     child: Column(
                       children: [
-                        Text('12', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 22)),
-                        Text('Amis parraines'),
+                        const Text('12', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 22)),
+                        const Text('Amis parraines'),
                       ],
                     ),
                   ),
@@ -65,11 +65,11 @@ class ParrainageScreen extends StatelessWidget {
               Expanded(
                 child: Card(
                   child: Padding(
-                    padding: EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(12),
                     child: Column(
                       children: [
-                        Text(fcfa(mockUser.soldeCredits), style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
-                        Text('Credits cumules'),
+                        Text(fcfa(mockUser.soldeCredits), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
+                        const Text('Credits cumules'),
                       ],
                     ),
                   ),
@@ -85,12 +85,17 @@ class ParrainageScreen extends StatelessWidget {
           _step(2, 'Ils commandent', 'Vos amis reçoivent 1.000 FCFA de réduction sur leur première commande.'),
           const SizedBox(height: 8),
           _step(3, 'Vous gagnez', 'Vous recevez 1.500 FCFA de crédit dès que leur commande est livrée.'),
-          const SizedBox(height: 16),
+          const SizedBox(height: 120),
           FilledButton.icon(
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(52),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
             onPressed: () {},
             icon: const Icon(Icons.share),
             label: const Text('Partager mon code'),
           ),
+          const SizedBox(height: 24),
         ],
       ),
       bottomNavigationBar: FastEatBottomNavBar(

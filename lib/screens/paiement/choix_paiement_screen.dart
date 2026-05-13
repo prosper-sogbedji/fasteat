@@ -11,8 +11,40 @@ import '../../widgets/common/formatters.dart';
 import '../../widgets/paiement/moov_button.dart';
 import '../../widgets/paiement/mtn_button.dart';
 
-class ChoixPaiementScreen extends StatelessWidget {
+class ChoixPaiementScreen extends StatefulWidget {
   const ChoixPaiementScreen({super.key});
+
+  @override
+  State<ChoixPaiementScreen> createState() => _ChoixPaiementScreenState();
+}
+
+class _ChoixPaiementScreenState extends State<ChoixPaiementScreen> {
+  late final TextEditingController _numeroCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _numeroCtrl = TextEditingController();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final flow = context.read<FlowProvider>();
+    if (_numeroCtrl.text.isEmpty) {
+      if (flow.numeroPaiement.isNotEmpty) {
+        _numeroCtrl.text = flow.numeroPaiement;
+      } else {
+        _numeroCtrl.text = '+229 90 00 00 00';
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _numeroCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +96,22 @@ class ChoixPaiementScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
+                  const Text('Numéro de paiement', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Saisissez le numéro qui sera débité (même numéro que votre compte Moov, MTN ou Celtis selon le mode choisi).',
+                    style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _numeroCtrl,
+                    keyboardType: TextInputType.phone,
+                    decoration: const InputDecoration(
+                      hintText: 'Ex. 01 XX XX XX XX',
+                      prefixIcon: Icon(Icons.phone_android_rounded),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   const Text('Mode de paiement', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
                   const SizedBox(height: 8),
                   MtnButton(selected: flow.paiementMethode == PaiementMethode.mtn, onTap: () => context.read<FlowProvider>().setPaiement(PaiementMethode.mtn)),
@@ -77,21 +125,35 @@ class ChoixPaiementScreen extends StatelessWidget {
                       side: const BorderSide(color: AppColors.border),
                     ),
                     tileColor: Colors.white,
-                    title: const Text('Carte Bancaire', style: TextStyle(fontWeight: FontWeight.w600)),
-                    subtitle: const Text('Visa / Mastercard'),
+                    leading: const Icon(Icons.account_balance_rounded, color: AppColors.primary),
+                    title: const Text('Celtis Bénin', style: TextStyle(fontWeight: FontWeight.w600)),
+                    subtitle: const Text('Paiement via compte / service Celtis'),
                     trailing: flow.paiementMethode == PaiementMethode.carte
                         ? const Icon(Icons.check_circle_rounded, color: Color(0xFFE63946))
                         : const Icon(Icons.circle_outlined),
                   ),
                   const SizedBox(height: 12),
-                  const SizedBox(height: 14),
                   const Text('PAIEMENT 100% SECURISE PAR CHIFFREMENT SSL', style: TextStyle(fontSize: 11, color: Colors.black54, letterSpacing: 0.3)),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 120),
                   FilledButton(
-                    style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                    onPressed: () => context.push(AppRoutes.paiementProcessing),
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size.fromHeight(52),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                    onPressed: () {
+                      final n = _numeroCtrl.text.replaceAll(RegExp(r'\s'), '');
+                      if (n.length < 8) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Veuillez saisir un numéro de paiement valide.')),
+                        );
+                        return;
+                      }
+                      context.read<FlowProvider>().setNumeroPaiement(_numeroCtrl.text.trim());
+                      context.push(AppRoutes.paiementProcessing);
+                    },
                     child: Text('Confirmer et payer - ${fcfa(total)}'),
                   ),
+                  const SizedBox(height: 24),
                 ],
               ),
             ),

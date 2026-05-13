@@ -137,7 +137,6 @@ class ProfilPlaceholderScreen extends StatelessWidget {
               (icon: Icons.credit_card_rounded, label: 'Mode de paiement', route: AppRoutes.paiementChoix),
               (icon: Icons.card_giftcard_rounded, label: 'Programme de parrainage', route: AppRoutes.parrainage),
               (icon: Icons.person_outline_rounded, label: 'Mes infos', route: AppRoutes.mesInfos),
-              (icon: Icons.settings_outlined, label: 'Parametres', route: AppRoutes.mesInfos),
             ]),
           ),
           const SizedBox(height: 14),
