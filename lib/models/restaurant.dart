@@ -24,7 +24,6 @@ class Restaurant {
   final bool livraison;
   final bool qrCode;
   final String abonnement;
-  /// Plusieurs visuels pour carrousel (accueil, etc.). Le premier sert d’image principale.
   final List<String> images;
   final bool certifie;
 

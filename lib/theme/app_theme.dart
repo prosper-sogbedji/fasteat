@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 abstract final class AppColors {
-  static const primary = Color(0xFF0B6E6E);
-  static const primaryDark = Color(0xFF095959);
-  static const accent = Color(0xFFF4B400);
-  static const background = Color(0xFFF8FAFB);
-  static const backgroundAlt = Color(0xFFFFFFFF);
-  static const textPrimary = Color(0xFF1A1A1A);
-  static const textSecondary = Color(0xFF6B6B6B);
-  static const border = Color(0xFFEDF2F3);
-  static const success = Color(0xFF2ECC71);
+  static const primary = Color(0xFFFF7700);
+  static const primaryHover = Color(0xFFE66A00);
+  static const primaryLight = Color(0xFFFFF1E6);
+  static const sidebarBg = Color(0xFF0F1923);
+  static const background = Color(0xFFF7F7F7);
+  static const surface = Color(0xFFFFFFFF);
+  static const textPrimary = Color(0xFF1A1A2E);
+  static const textSecondary = Color(0xFF6B7280);
+  static const border = Color(0xFFE5E7EB);
+  static const success = Color(0xFF1D9E75);
   static const error = Color(0xFFE74C3C);
   static const mtnMoMo = Color(0xFFFFCC00);
   static const moovMoney = Color(0xFF0070C0);
@@ -23,8 +24,7 @@ abstract final class AppTheme {
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
         primary: AppColors.primary,
-        secondary: AppColors.accent,
-        surface: AppColors.background,
+        surface: AppColors.surface,
       ),
       scaffoldBackgroundColor: AppColors.background,
     );
@@ -74,12 +74,11 @@ abstract final class AppTheme {
         },
       ),
       cardTheme: CardThemeData(
-        color: AppColors.background,
-        elevation: 0.1,
-        shadowColor: Colors.black.withValues(alpha: 0.02),
+        color: AppColors.surface,
+        elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-          side: const BorderSide(color: AppColors.border, width: 0.8),
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: AppColors.border, width: 1.0),
         ),
       ),
       dividerTheme: const DividerThemeData(
@@ -110,36 +109,53 @@ abstract final class AppTheme {
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-          minimumSize: const Size.fromHeight(52),
+          minimumSize: const Size.fromHeight(50),
+          textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
+          elevation: 0,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primary,
-          side: const BorderSide(color: AppColors.primary),
-          minimumSize: const Size.fromHeight(52),
+          side: const BorderSide(color: AppColors.primary, width: 1.5),
+          minimumSize: const Size.fromHeight(50),
+          textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
         ),
       ),
+      checkboxTheme: CheckboxThemeData(
+        fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+          if (states.contains(WidgetState.selected)) {
+            return AppColors.primary;
+          }
+          return Colors.transparent;
+        }),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+      ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.backgroundAlt,
+        fillColor: AppColors.surface,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border, width: 0.8),
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: AppColors.border, width: 1.5),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border, width: 0.8),
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: AppColors.border, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.2),
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+        ),
+        labelStyle: const TextStyle(
+          fontSize: 14,
+          color: AppColors.textSecondary,
         ),
       ),
     );

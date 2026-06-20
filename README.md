@@ -1,4 +1,4 @@
-# fast_eat
+# fasteat_dashboard
 
 A new Flutter project.
 
