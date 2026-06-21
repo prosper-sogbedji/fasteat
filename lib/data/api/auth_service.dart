@@ -13,6 +13,9 @@ class AuthResult {
   final String? userName;
   final String? errorMessage;
   final bool isServerUnavailable;
+  final bool? hasRestaurants;
+  final String? nextAction;
+  final List<dynamic>? restaurants;
 
   const AuthResult._({
     required this.success,
@@ -23,6 +26,9 @@ class AuthResult {
     this.userName,
     this.errorMessage,
     this.isServerUnavailable = false,
+    this.hasRestaurants,
+    this.nextAction,
+    this.restaurants,
   });
 
   factory AuthResult.success({
@@ -31,6 +37,9 @@ class AuthResult {
     String? restaurantId,
     String? restaurantName,
     String? userName,
+    bool? hasRestaurants,
+    String? nextAction,
+    List<dynamic>? restaurants,
   }) =>
       AuthResult._(
         success: true,
@@ -39,6 +48,9 @@ class AuthResult {
         restaurantId: restaurantId,
         restaurantName: restaurantName,
         userName: userName,
+        hasRestaurants: hasRestaurants,
+        nextAction: nextAction,
+        restaurants: restaurants,
       );
 
   factory AuthResult.failure(String message, {bool serverUnavailable = false}) =>
@@ -172,6 +184,36 @@ class AuthService {
     }
   }
 
+  /// Récupère la liste des restaurants de l'utilisateur connecté
+  Future<Map<String, dynamic>> getOwnedRestaurants() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+      
+      final url = Uri.parse('${ApiConfig.baseUrl}${ApiConfig.dashboardRestaurants}');
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+      ).timeout(
+        const Duration(seconds: 15),
+        onTimeout: () => throw Exception('TimeoutException'),
+      );
+
+      final resData = _parseJson(response.body);
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        return resData['data'] ?? {};
+      } else {
+        throw Exception(resData['message'] ?? resData['error'] ?? 'Erreur de récupération des restaurants.');
+      }
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
   /// Inscription d'un nouvel utilisateur (sans restaurant)
   Future<AuthResult> register(Map<String, dynamic> data) async {
     try {
@@ -210,7 +252,7 @@ class AuthService {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
       
-      final url = Uri.parse('${ApiConfig.baseUrl}${ApiConfig.adminRestaurants}'); // ou autre route
+      final url = Uri.parse('${ApiConfig.baseUrl}${ApiConfig.dashboardRestaurants}');
       final response = await http.post(
         url,
         headers: {
@@ -227,12 +269,20 @@ class AuthService {
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         // Mettre à jour la session avec l'ID du restaurant
-        final restoId = resData['data']?['id']?.toString() ?? 'r_new_${DateTime.now().millisecondsSinceEpoch}';
-        final restoName = data['restaurantName']?.toString();
+        final restoId = resData['data']?['restaurant']?['id']?.toString() ?? 'r_new_${DateTime.now().millisecondsSinceEpoch}';
+        final restoName = data['name']?.toString() ?? data['restaurantName']?.toString();
+        final nextAction = resData['data']?['onboarding']?['nextStep']?.toString();
         
         await prefs.setString('restaurant_id', restoId);
         if (restoName != null) {
           await prefs.setString('restaurant_name', restoName);
+        }
+
+        // Fetch owned restaurants to refresh state
+        try {
+          await getOwnedRestaurants();
+        } catch (e) {
+          // ignore
         }
 
         return AuthResult.success(
@@ -241,6 +291,7 @@ class AuthService {
           restaurantId: restoId,
           restaurantName: restoName,
           userName: prefs.getString('user_name'),
+          nextAction: nextAction,
         );
       } else {
         final message = resData['message'] ?? resData['error'] ?? "Erreur lors de la création du restaurant.";

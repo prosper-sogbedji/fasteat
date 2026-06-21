@@ -171,11 +171,25 @@ class _LoginScreenState extends State<LoginScreen>
                             Navigator.pop(context);
                             if (result.role == 'super_admin') {
                               context.go('/admin');
-                            } else if (result.restaurantId == null ||
-                                result.restaurantId!.isEmpty) {
-                              context.go('/create-restaurant');
                             } else {
-                              context.go('/');
+                              try {
+                                final resData = await _authService.getOwnedRestaurants();
+                                final hasRestaurants = resData['hasRestaurants'] ?? false;
+                                final nextAction = resData['nextAction'];
+                                
+                                if (hasRestaurants == false || nextAction == 'create_restaurant') {
+                                  context.go('/create-restaurant');
+                                } else {
+                                  context.go('/');
+                                }
+                              } catch (e) {
+                                // Fallback if API fails
+                                if (result.restaurantId == null || result.restaurantId!.isEmpty) {
+                                  context.go('/create-restaurant');
+                                } else {
+                                  context.go('/');
+                                }
+                              }
                             }
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(

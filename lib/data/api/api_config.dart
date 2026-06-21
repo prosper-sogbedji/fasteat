@@ -21,6 +21,7 @@ class ApiConfig {
       '/admin/restaurants/$restaurantId/status';
 
   // Restaurant Dashboard
+  static const String dashboardRestaurants = '/restaurant-dashboard/restaurants';
   static const String dashboardProfile = '/restaurant-dashboard/profile';
   static const String dashboardMenuItems = '/restaurant-dashboard/menu-items';
   static const String dashboardMenuCategories = '/restaurant-dashboard/menu-categories';
