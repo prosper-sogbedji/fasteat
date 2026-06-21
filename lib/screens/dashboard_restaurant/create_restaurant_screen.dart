@@ -59,6 +59,16 @@ class _CreateRestaurantScreenState extends State<CreateRestaurantScreen> {
     super.dispose();
   }
 
+  String _formatPhone(String phone) {
+    phone = phone.trim();
+    if (phone.isEmpty) return phone;
+    // Si le numéro ne commence pas par '+', on ajoute l'indicatif du Bénin (+229) par défaut
+    if (!phone.startsWith('+')) {
+      return '+229$phone';
+    }
+    return phone;
+  }
+
   Future<void> _handleCreate() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
@@ -69,13 +79,13 @@ class _CreateRestaurantScreenState extends State<CreateRestaurantScreen> {
         'name': _restoNameController.text.trim(),
         'description': _descriptionController.text.trim(),
         'cuisineType': _cuisineType,
-        'phoneNumber': _phoneNumberController.text.trim(),
+        'phoneNumber': _formatPhone(_phoneNumberController.text),
         'email': _emailController.text.trim(),
         'address': _addressController.text.trim(),
         'city': _cityController.text.trim(),
         'neighborhood': _neighborhoodController.text.trim(),
         'ownerFullName': _ownerFullNameController.text.trim(),
-        'ownerPhoneNumber': _ownerPhoneNumberController.text.trim(),
+        'ownerPhoneNumber': _formatPhone(_ownerPhoneNumberController.text),
         'deliveryEnabled': _deliveryEnabled,
         'scheduledPickupEnabled': _scheduledPickupEnabled,
       });
