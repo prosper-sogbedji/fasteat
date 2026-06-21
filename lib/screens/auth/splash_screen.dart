@@ -82,9 +82,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF071013), // Ultra-dark charcoal
-              Color(0xFF0C242A), // Dark slate
-              AppColors.primary, // Deep Teal
+              Color(0xFF0F1923), // Dark Bg
+              Color(0xFF132130), // Dark Mid
+              Color(0xFF0A3038), // Subtle dark cyan
             ],
             stops: [0.0, 0.5, 1.0],
           ),
@@ -102,26 +102,27 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     child: Opacity(
                       opacity: _opacityAnimation.value,
                       child: Container(
-                        padding: const EdgeInsets.all(28),
+                        width: 96,
+                        height: 96,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.08),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.15),
-                            width: 1.5,
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFFF7700), Color(0xFFFF9100)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
+                          borderRadius: BorderRadius.circular(28),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primary.withOpacity(0.4),
-                              blurRadius: 40,
-                              spreadRadius: 5,
+                              color: const Color(0xFFFF7700).withValues(alpha: 0.4),
+                              blurRadius: 32,
+                              offset: const Offset(0, 12),
                             ),
                           ],
                         ),
                         child: const Icon(
-                          Icons.restaurant_menu_rounded,
+                          Icons.restaurant_rounded,
                           color: Colors.white,
-                          size: 64,
+                          size: 48,
                         ),
                       ),
                     ),
@@ -141,9 +142,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               ),
               const SizedBox(height: 8),
               Text(
-                'Espace Partenaire Restaurant',
+                'Espace Partenaire',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.6),
+                  color: Colors.white.withValues(alpha: 0.6),
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   letterSpacing: 0.5,
@@ -151,14 +152,15 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               ),
               const SizedBox(height: 48),
               // Indicateur de chargement premium
-              SizedBox(
+              const SizedBox(
                 width: 32,
                 height: 32,
                 child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
+                  strokeWidth: 3,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    Colors.white.withOpacity(0.4),
+                    Color(0xFFFF7700),
                   ),
+                  backgroundColor: Colors.white10,
                 ),
               ),
             ],
