@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../data/api/auth_service.dart';
+import '../../widgets/common/auth_left_panel.dart';
 
 // ─── Constantes de couleurs (Communes avec Login) ─────────────────────────────
 const _kDarkBg = Color(0xFF0F1923);
@@ -32,26 +33,9 @@ class _SignupScreenState extends State<SignupScreen>
   final _focusNodes = <String, FocusNode>{};
   final _focusStates = <String, bool>{};
 
-  late final AnimationController _orbCtrl;
-  late final AnimationController _cardCtrl;
-  late final Animation<double> _cardFloat;
-
   @override
   void initState() {
     super.initState();
-    _orbCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 8),
-    )..repeat(reverse: true);
-    _cardCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 4),
-    )..repeat(reverse: true);
-    _cardFloat = Tween<double>(
-      begin: 0,
-      end: 12,
-    ).animate(CurvedAnimation(parent: _cardCtrl, curve: Curves.easeInOut));
-
     final fields = ['fullName', 'phone', 'referralCode'];
     for (final f in fields) {
       final fn = FocusNode();
@@ -66,8 +50,6 @@ class _SignupScreenState extends State<SignupScreen>
     _fullNameController.dispose();
     _phoneController.dispose();
     _referralCodeController.dispose();
-    _orbCtrl.dispose();
-    _cardCtrl.dispose();
     for (final fn in _focusNodes.values) fn.dispose();
     super.dispose();
   }
@@ -222,8 +204,8 @@ class _SignupScreenState extends State<SignupScreen>
   Widget _buildDesktop(Size size) {
     return Row(
       children: [
-        Expanded(flex: 5, child: _buildLeftPanel(size)),
-        Expanded(flex: 7, child: _buildRightPanel()),
+        Expanded(flex: 6, child: _buildLeftPanel(size)),
+        Expanded(flex: 4, child: _buildRightPanel()),
       ],
     );
   }
@@ -280,106 +262,9 @@ class _SignupScreenState extends State<SignupScreen>
   }
 
   Widget _buildLeftPanel(Size size) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [_kDarkBg, _kDarkMid],
-        ),
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            top: -100,
-            left: -100,
-            child: AnimatedBuilder(
-              animation: _orbCtrl,
-              builder: (_, __) => Transform.translate(
-                offset: Offset(0, 30 * sin(_orbCtrl.value * 2 * 3.1415)),
-                child: Container(
-                  width: 400,
-                  height: 400,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        _kTealGlow.withOpacity(0.15),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(64),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: _kWhite.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Icon(
-                        Icons.restaurant_menu_rounded,
-                        color: _kAccent,
-                        size: 28,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    const Text(
-                      'FastEat Bénin',
-                      style: TextStyle(
-                        color: _kWhite,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: -1.0,
-                      ),
-                    ),
-                  ],
-                ),
-                const Spacer(),
-                const Text(
-                  'Rejoignez\nle mouvement.',
-                  style: TextStyle(
-                    color: _kWhite,
-                    fontSize: 56,
-                    fontWeight: FontWeight.w900,
-                    height: 1.1,
-                    letterSpacing: -2.0,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Ouvrez votre compte partenaire et gérez vos commandes en toute simplicité.',
-                  style: TextStyle(
-                    color: _kWhite.withOpacity(0.7),
-                    fontSize: 18,
-                    height: 1.5,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 64),
-                const Spacer(),
-                Text(
-                  '© 2026 FastEat Bénin.',
-                  style: TextStyle(
-                    color: _kWhite.withOpacity(0.25),
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+    return const AuthLeftPanel(
+      title: 'Rejoignez\nle mouvement.',
+      subtitle: 'Ouvrez votre compte partenaire et gérez vos commandes en toute simplicité.',
     );
   }
 
