@@ -23,7 +23,6 @@ class RestaurantScreen extends StatelessWidget {
     final restaurant = mockRestaurants.firstWhere((r) => r.id == restaurantId, orElse: () => mockRestaurants.first);
     final plats = mockPlats.where((p) => p.restoId == restaurant.id).toList();
     final panier = context.watch<PanierProvider>();
-    final flow = context.watch<FlowProvider>();
     final total = panier.sousTotal;
 
     final categories = ['Entrees', 'Plats', 'Desserts', 'Boissons', 'Accompagnements'];
@@ -160,14 +159,6 @@ class RestaurantScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
                 onPressed: () {
-                  if (flow.modeCommande == ModeCommande.programmee) {
-                    context.push('/panier/programmee');
-                    return;
-                  }
-                  if (flow.modeCommande == ModeCommande.qrCode) {
-                    context.push('/qr-scanner');
-                    return;
-                  }
                   context.push('/panier');
                 },
                 icon: const Icon(Icons.shopping_bag_outlined),
@@ -222,13 +213,46 @@ class RestaurantScreen extends StatelessWidget {
                 child: IconButton(
                   padding: EdgeInsets.zero,
                   iconSize: 15,
-                  onPressed: () => context.read<PanierProvider>().ajouterPlat(p),
+                  onPressed: () async {
+                    final panier = context.read<PanierProvider>();
+                    try {
+                      await panier.ajouterPlat(p);
+                    } on CrossRestaurantException catch (_) {
+                      if (context.mounted) {
+                        _showCrossRestaurantDialog(context, panier, p);
+                      }
+                    }
+                  },
                   icon: const Icon(Icons.add, color: Colors.white),
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _showCrossRestaurantDialog(BuildContext context, PanierProvider panier, Plat plat) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Vider le panier ?', style: TextStyle(fontWeight: FontWeight.w800)),
+        content: const Text('Vous avez déjà des articles d\'un autre restaurant. Voulez-vous vider votre panier actuel pour commander ici ?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Annuler', style: TextStyle(color: AppColors.textSecondary)),
+          ),
+          FilledButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await panier.vider();
+              await panier.ajouterPlat(plat);
+            },
+            child: const Text('Vider et Ajouter'),
+          ),
+        ],
       ),
     );
   }

@@ -9,6 +9,7 @@ enum StatutCommande {
   expiree,
 }
 enum ModeCommande { programmee, livraison, qrCode }
+enum ModeConsommation { surPlace, aEmporter, livraison }
 
 class LigneCommande {
   const LigneCommande({
@@ -57,6 +58,7 @@ class Commande {
     this.validatedAt,
     this.readyAt,
     this.motifAnnulation,
+    this.modeConsommation,
   });
 
   final String id;
@@ -72,6 +74,7 @@ class Commande {
   final DateTime? validatedAt;
   final DateTime? readyAt;
   final String? motifAnnulation;
+  final ModeConsommation? modeConsommation;
 
   int get sousTotal => lignes.fold(0, (sum, l) => sum + l.total);
   int get total => sousTotal + fraisLivraison;
@@ -81,6 +84,7 @@ class Commande {
     DateTime? validatedAt,
     DateTime? readyAt,
     String? motifAnnulation,
+    ModeConsommation? modeConsommation,
   }) {
     return Commande(
       id: id,
@@ -96,6 +100,7 @@ class Commande {
       validatedAt: validatedAt ?? this.validatedAt,
       readyAt: readyAt ?? this.readyAt,
       motifAnnulation: motifAnnulation ?? this.motifAnnulation,
+      modeConsommation: modeConsommation ?? this.modeConsommation,
     );
   }
 
@@ -113,6 +118,7 @@ class Commande {
         'validatedAt': validatedAt?.toIso8601String(),
         'readyAt': readyAt?.toIso8601String(),
         'motifAnnulation': motifAnnulation,
+        'modeConsommation': modeConsommation?.name,
       };
 
   factory Commande.fromJson(Map<String, dynamic> json) {
@@ -124,6 +130,7 @@ class Commande {
     final wantedAt = json['heureRecuperationSouhaitee'] as String?;
     final validated = json['validatedAt'] as String?;
     final ready = json['readyAt'] as String?;
+    final modeConsName = json['modeConsommation'] as String?;
     return Commande(
       id: json['id'] as String,
       restaurantId: json['restaurantId'] as String,
@@ -140,6 +147,9 @@ class Commande {
       validatedAt: validated == null ? null : DateTime.parse(validated),
       readyAt: ready == null ? null : DateTime.parse(ready),
       motifAnnulation: json['motifAnnulation'] as String?,
+      modeConsommation: modeConsName != null 
+          ? ModeConsommation.values.firstWhere((m) => m.name == modeConsName, orElse: () => ModeConsommation.surPlace)
+          : null,
     );
   }
 

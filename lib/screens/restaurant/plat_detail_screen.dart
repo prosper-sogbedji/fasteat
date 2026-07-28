@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../data/mock/mock_plats.dart';
+import '../../models/plat.dart';
 import '../../providers/panier_provider.dart';
+import '../../providers/restaurants_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common/formatters.dart';
 import '../../widgets/common/image_fallback.dart';
@@ -21,11 +21,27 @@ class _PlatDetailScreenState extends State<PlatDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final plat = mockPlats.firstWhere((p) => p.id == widget.platId, orElse: () => mockPlats.first);
+    final plat = context.watch<RestaurantsProvider>().platParId(widget.platId);
+
+    if (plat == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Detail du plat'), centerTitle: true),
+        body: const Center(
+          child: Padding(
+            padding: EdgeInsets.all(AppSpacing.xl),
+            child: Text(
+              'Ce plat est indisponible pour le moment.',
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      );
+    }
+
     final total = plat.prix * qte;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Detail d'un plat"),
+        title: const Text('Detail du plat'),
         centerTitle: true,
       ),
       body: ListView(
@@ -52,13 +68,13 @@ class _PlatDetailScreenState extends State<PlatDetailScreen> {
           const SizedBox(height: 4),
           Text(plat.description, style: const TextStyle(color: AppColors.textSecondary, height: 1.35)),
           const SizedBox(height: 16),
-          const Text("Choisir l'accompagnement", style: TextStyle(fontWeight: FontWeight.w700)),
+          const Text('Choisir l\'accompagnement', style: TextStyle(fontWeight: FontWeight.w700)),
           const SizedBox(height: 8),
-          _accompagnementItem('Atassi Traditionnel', true),
+          _accompagnementItem('Atassi Traditionnel'),
           const SizedBox(height: 8),
-          _accompagnementItem('Aloko (Plantain)', false),
+          _accompagnementItem('Aloko (Plantain)'),
           const SizedBox(height: 8),
-          _accompagnementItem('Riz Blanc Parfume', false),
+          _accompagnementItem('Riz Blanc Parfume'),
           const SizedBox(height: 16),
           const Text('Quantite', style: TextStyle(fontWeight: FontWeight.w700)),
           const SizedBox(height: 10),
@@ -82,11 +98,18 @@ class _PlatDetailScreenState extends State<PlatDetailScreen> {
           const SizedBox(height: 20),
           FilledButton(
             style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-            onPressed: () {
-              for (int i = 0; i < qte; i++) {
-                context.read<PanierProvider>().ajouterPlat(plat);
+            onPressed: () async {
+              final panier = context.read<PanierProvider>();
+              try {
+                for (int i = 0; i < qte; i++) {
+                  await panier.ajouterPlat(plat);
+                }
+                if (context.mounted) Navigator.pop(context);
+              } on CrossRestaurantException catch (_) {
+                if (context.mounted) {
+                  _showCrossRestaurantDialog(context, panier, plat);
+                }
               }
-              Navigator.pop(context);
             },
             child: Text('Ajouter au panier - ${fcfa(total)}'),
           ),
@@ -95,8 +118,8 @@ class _PlatDetailScreenState extends State<PlatDetailScreen> {
     );
   }
 
-  Widget _accompagnementItem(String label, bool selected) {
-    final isSelected = label == accompaniment || (selected && accompaniment == 'Atassi Traditionnel');
+  Widget _accompagnementItem(String label) {
+    final isSelected = label == accompaniment;
     return InkWell(
       borderRadius: BorderRadius.circular(10),
       onTap: () => setState(() => accompaniment = label),
@@ -119,4 +142,32 @@ class _PlatDetailScreenState extends State<PlatDetailScreen> {
       ),
     );
   }
+
+  void _showCrossRestaurantDialog(BuildContext context, PanierProvider panier, Plat plat) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Vider le panier ?', style: TextStyle(fontWeight: FontWeight.w800)),
+        content: const Text('Vous avez déjà des articles d\'un autre restaurant. Voulez-vous vider votre panier actuel pour commander ici ?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Annuler', style: TextStyle(color: AppColors.textSecondary)),
+          ),
+          FilledButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await panier.vider();
+              for (int i = 0; i < qte; i++) {
+                await panier.ajouterPlat(plat);
+              }
+              if (context.mounted) Navigator.pop(context);
+            },
+            child: const Text('Vider et Ajouter'),
+          ),
+        ],
+      ),
+    );
+  }
 }
+

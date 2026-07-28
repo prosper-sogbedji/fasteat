@@ -3,16 +3,18 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../app_routes.dart';
-import '../../data/mock/mock_user.dart';
+import '../../core/session_sync.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/favorites_provider.dart';
+import '../../providers/notifications_provider.dart';
 import '../../theme/app_theme.dart';
-import '../../widgets/common/bottom_nav_bar.dart';
 
 class ProfilPlaceholderScreen extends StatelessWidget {
   const ProfilPlaceholderScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<AuthProvider>().currentUser;
     return Scaffold(
       appBar: AppBar(title: const Text('Mon Profil'), centerTitle: true),
       body: ListView(
@@ -32,10 +34,10 @@ class ProfilPlaceholderScreen extends StatelessWidget {
                           color: const Color(0xFFD6F3F2),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Text(
-                            'KM',
-                            style: TextStyle(
+                            user.initials,
+                            style: const TextStyle(
                               color: AppColors.primaryDark,
                               fontSize: 28,
                               fontWeight: FontWeight.w500,
@@ -49,12 +51,12 @@ class ProfilPlaceholderScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              mockUser.nom,
+                              user.nom,
                               style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 28, height: 1),
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              mockUser.telephone,
+                              user.telephone,
                               style: const TextStyle(
                                 fontSize: 13,
                                 color: AppColors.textSecondary,
@@ -117,9 +119,8 @@ class ProfilPlaceholderScreen extends StatelessWidget {
           const SizedBox(height: 8),
           _sectionCard(
             children: _sectionItems(context, [
-              (icon: Icons.receipt_long_rounded, label: 'Mes commandes', route: AppRoutes.historique),
+              (icon: Icons.location_on_outlined, label: 'Mes adresses', route: AppRoutes.adresses),
               (icon: Icons.reviews_outlined, label: 'Mes avis', route: AppRoutes.avis),
-              (icon: Icons.favorite_border_rounded, label: 'Mes favoris', route: AppRoutes.favoris),
             ]),
           ),
           const SizedBox(height: 12),
@@ -135,15 +136,33 @@ class ProfilPlaceholderScreen extends StatelessWidget {
           _sectionCard(
             children: _sectionItems(context, [
               (icon: Icons.credit_card_rounded, label: 'Mode de paiement', route: AppRoutes.paiementChoix),
-              (icon: Icons.card_giftcard_rounded, label: 'Programme de parrainage', route: AppRoutes.parrainage),
               (icon: Icons.person_outline_rounded, label: 'Mes infos', route: AppRoutes.mesInfos),
+              (icon: Icons.settings_outlined, label: 'Paramètres', route: AppRoutes.parametres),
+            ]),
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'Assistance',
+            style: TextStyle(
+              fontSize: 12,
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 8),
+          _sectionCard(
+            children: _sectionItems(context, [
+              (icon: Icons.help_outline_rounded, label: 'Centre d\'Aide', route: AppRoutes.aide),
             ]),
           ),
           const SizedBox(height: 14),
           OutlinedButton(
-            onPressed: () {
-              context.read<AuthProvider>().logoutMock();
-              context.go(AppRoutes.connexion);
+            onPressed: () async {
+              final favorites = context.read<FavoritesProvider>();
+              final notifications = context.read<NotificationsProvider>();
+              await context.read<AuthProvider>().logout();
+              clearClientSessionData(favorites: favorites, notifications: notifications);
+              if (context.mounted) context.go(AppRoutes.connexion);
             },
             style: OutlinedButton.styleFrom(
               foregroundColor: const Color(0xFFB42318),
@@ -154,14 +173,6 @@ class ProfilPlaceholderScreen extends StatelessWidget {
           const SizedBox(height: 10),
           const Center(child: Text('Version 1.0.1+build 001', style: TextStyle(fontSize: 11, color: Colors.black45))),
         ],
-      ),
-      bottomNavigationBar: FastEatBottomNavBar(
-        currentIndex: 3,
-        onTap: (i) {
-          if (i == 0) context.go(AppRoutes.home);
-          if (i == 1) context.go(AppRoutes.favoris);
-          if (i == 2) context.go(AppRoutes.historique);
-        },
       ),
     );
   }

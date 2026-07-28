@@ -1,5 +1,5 @@
 name: fast_eat
-description: FastEat Benin (Flutter frontend only, donnees mockees)
+description: FastEat Benin — application mobile client (commande & paiement)
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -15,6 +15,14 @@ dependencies:
   google_fonts: ^6.2.1
   intl: ^0.20.2
   shared_preferences: ^2.5.5
+  http: ^1.6.0
+  mobile_scanner: ^7.2.0
+  firebase_core: ^4.9.0
+  firebase_messaging: ^16.2.2
+  flutter_local_notifications: ^21.0.0
+  feda_flutter: ^1.0.1
+  uuid: ^4.5.3
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:

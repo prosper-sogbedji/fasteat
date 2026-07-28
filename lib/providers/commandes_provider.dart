@@ -1,56 +1,113 @@
-import 'package:flutter/material.dart';
 import 'dart:convert';
+
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../data/mock/mock_restaurants.dart';
-import '../data/mock/mock_commandes.dart';
+import '../data/api/auth_service.dart';
+import '../data/api/cart_service.dart';
+import '../data/api/orders_service.dart';
+
 import '../models/commande.dart';
+import '../providers/flow_provider.dart';
 import '../providers/panier_provider.dart';
 
 class CommandesProvider extends ChangeNotifier {
   static const int delaiAnnulationClientMinutes = 20;
   static const int delaiAlerteValidationMinutes = 10;
 
-  CommandesProvider() {
+  CommandesProvider({
+    OrdersService? ordersService,
+    CartService? cartService,
+    AuthService? authService,
+  })  : _orders = ordersService ?? OrdersService(authService: authService),
+        _cart = cartService ?? CartService(authService: authService),
+        _auth = authService ?? AuthService() {
     _load();
   }
 
   static const _kCommandesKey = 'commandes.items';
+  final OrdersService _orders;
+  final CartService _cart;
+  final AuthService _auth;
   final List<Commande> _commandes = [];
+  bool _isSyncing = false;
 
   List<Commande> get commandes => List.unmodifiable(_commandes);
+  bool get isSyncing => _isSyncing;
 
   List<Commande> get enCours => _commandes.where(_estCommandeEnCours).toList();
   List<Commande> get terminees => _commandes.where((c) => c.statut == StatutCommande.livree).toList();
 
   Commande? get commandeActive {
     for (final c in _commandes) {
-      if (_estCommandeEnCours(c)) {
-        return c;
-      }
+      if (_estCommandeEnCours(c)) return c;
     }
     return null;
   }
 
+  Future<bool> _hasSession() async {
+    final token = await _auth.getToken();
+    return token != null && token.isNotEmpty;
+  }
+
+  Future<void> refreshFromApi() async {
+    if (!await _hasSession()) return;
+    _isSyncing = true;
+    notifyListeners();
+    try {
+      final remote = await _orders.getOrders();
+      _commandes
+        ..clear()
+        ..addAll(remote);
+      await _save();
+    } catch (e) {
+      debugPrint('Orders sync error: $e');
+    } finally {
+      _isSyncing = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> checkoutDepuisPanier({
+    required FlowProvider flow,
+    required PaiementMethode paiement,
+    required String numeroPaiement,
+  }) async {
+    if (!await _hasSession()) return false;
+    try {
+      await _cart.updateFulfillment(
+        mode: flow.modeCommande,
+        pickupTime: flow.modeCommande == ModeCommande.programmee ? flow.heureRecuperation : null,
+      );
+      await _cart.checkout(
+        paymentMethod: paiement,
+        paymentPhoneNumber: numeroPaiement,
+      );
+      await refreshFromApi();
+      return _commandes.isNotEmpty;
+    } catch (e) {
+      debugPrint('Checkout error: $e');
+      return false;
+    }
+  }
+
+  /// Mode démo hors ligne : enregistre une commande locale.
   Future<void> placerDepuisPanier({
     required List<PanierLigne> lignes,
     required ModeCommande mode,
     required int fraisLivraison,
+    required String restaurantNom,
+    required String restaurantId,
     DateTime? heureRecuperationSouhaitee,
   }) async {
     if (lignes.isEmpty) return;
-    final first = lignes.first.plat;
-    final resto = mockRestaurants.firstWhere(
-      (r) => r.id == first.restoId,
-      orElse: () => mockRestaurants.first,
-    );
     final now = DateTime.now();
     final id = '#FE-${(now.millisecondsSinceEpoch % 10000).toString().padLeft(4, '0')}';
 
     final commande = Commande(
       id: id,
-      restaurantId: resto.id,
-      restaurantNom: resto.nom,
+      restaurantId: restaurantId,
+      restaurantNom: restaurantNom,
       date: now,
       createdAt: now,
       mode: mode,
@@ -102,80 +159,29 @@ class CommandesProvider extends ChangeNotifier {
       return 'Annulée par vous : ${c.motifAnnulation}';
     }
     if (c.statut == StatutCommande.expiree) {
-      return "Commande expirée (pas de validation dans le délai).";
+      return 'Commande expirée (pas de validation dans le délai).';
     }
     return null;
-  }
-
-  Future<void> traiterDecisionRestaurant({
-    required String id,
-    required bool accepter,
-    String? motifAnnulation,
-  }) async {
-    final i = _commandes.indexWhere((c) => c.id == id);
-    if (i < 0) return;
-    final c = _commandes[i];
-    if (c.statut != StatutCommande.enAttenteValidation) return;
-
-    if (!accepter) {
-      _commandes[i] = c.copyWith(
-        statut: StatutCommande.annuleeRestaurant,
-        motifAnnulation: motifAnnulation ?? 'Plat indisponible',
-      );
-    } else {
-      _commandes[i] = c.copyWith(
-        statut: StatutCommande.preparation,
-        validatedAt: DateTime.now(),
-      );
-    }
-    await _save();
-    notifyListeners();
-  }
-
-  Future<void> avancerStatut(String id) async {
-    final i = _commandes.indexWhere((c) => c.id == id);
-    if (i < 0) return;
-    final c = _commandes[i];
-    StatutCommande next = c.statut;
-    switch (c.statut) {
-      case StatutCommande.enAttenteValidation:
-        next = StatutCommande.preparation;
-      case StatutCommande.preparation:
-        next = StatutCommande.prete;
-      case StatutCommande.prete:
-        next = StatutCommande.livraison;
-      case StatutCommande.livraison:
-        next = StatutCommande.livree;
-      default:
-        return;
-    }
-    _commandes[i] = c.copyWith(
-      statut: next,
-      validatedAt: next == StatutCommande.preparation ? (c.validatedAt ?? DateTime.now()) : c.validatedAt,
-      readyAt: next == StatutCommande.prete ? DateTime.now() : c.readyAt,
-    );
-    await _save();
-    notifyListeners();
   }
 
   Future<void> annulerCommandeParClient(String id, {String? motif}) async {
     final i = _commandes.indexWhere((c) => c.id == id);
     if (i < 0) return;
     if (!canClientCancel(_commandes[i])) return;
+
+    if (await _hasSession()) {
+      try {
+        await _orders.cancelOrder(id);
+        await refreshFromApi();
+        return;
+      } catch (e) {
+        debugPrint('Cancel order API error: $e');
+      }
+    }
+
     _commandes[i] = _commandes[i].copyWith(
       statut: StatutCommande.annuleeClient,
       motifAnnulation: motif ?? "Annulation depuis l'app client",
-    );
-    await _save();
-    notifyListeners();
-  }
-
-  Future<void> annulerCommandeParRestaurant(String id, {String? motif}) async {
-    final i = _commandes.indexWhere((c) => c.id == id);
-    if (i < 0) return;
-    _commandes[i] = _commandes[i].copyWith(
-      statut: StatutCommande.annuleeRestaurant,
-      motifAnnulation: motif ?? 'Rupture de stock',
     );
     await _save();
     notifyListeners();
@@ -189,22 +195,16 @@ class CommandesProvider extends ChangeNotifier {
   }
 
   Future<void> _load() async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_kCommandesKey);
-    if (raw == null || raw.isEmpty) {
-      _commandes
-        ..clear()
-        ..addAll(mockCommandes);
-      await _save();
-      notifyListeners();
+    if (await _hasSession()) {
+      // Toujours synchroniser depuis l'API si l'utilisateur est connecté
+      await refreshFromApi();
+      // Ne jamais utiliser le cache local quand on est connecté
+      // (le cache pourrait contenir des données obsolètes après reset backend)
       return;
     }
-    final arr = jsonDecode(raw) as List<dynamic>;
-    _commandes
-      ..clear()
-      ..addAll(
-        arr.map((e) => Commande.fromJson(Map<String, dynamic>.from(e as Map))),
-      );
+    // Non connecté : vider le cache local (données potentiellement orphelines)
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_kCommandesKey);
     notifyListeners();
   }
 

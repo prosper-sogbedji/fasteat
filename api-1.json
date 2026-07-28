@@ -1,0 +1,5401 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          }
+        },
+        "tags": [
+          "App"
+        ],
+        "summary": "Health metadata",
+        "description": "platform endpoint. Health metadata"
+      }
+    },
+    "/route-map": {
+      "get": {
+        "operationId": "AppController_getRouteMap",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          }
+        },
+        "tags": [
+          "App"
+        ],
+        "summary": "Backend route contract",
+        "description": "platform endpoint. Backend route contract"
+      }
+    },
+    "/admin/dashboard": {
+      "get": {
+        "operationId": "AdminController_getDashboard",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Global KPI dashboard",
+        "description": "admin endpoint. Global KPI dashboard"
+      }
+    },
+    "/admin/users": {
+      "get": {
+        "operationId": "AdminController_getUsers",
+        "parameters": [
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Manage users",
+        "description": "admin endpoint. Manage users"
+      }
+    },
+    "/admin/users/{userId}/status": {
+      "patch": {
+        "operationId": "AdminController_updateUserStatus",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAccountStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Suspend or ban user",
+        "description": "admin endpoint. Suspend or ban user"
+      }
+    },
+    "/admin/restaurants": {
+      "get": {
+        "operationId": "AdminController_getRestaurants",
+        "parameters": [
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Manage restaurants",
+        "description": "admin endpoint. Manage restaurants"
+      }
+    },
+    "/admin/restaurants/{restaurantId}/status": {
+      "patch": {
+        "operationId": "AdminController_updateRestaurantStatus",
+        "parameters": [
+          {
+            "name": "restaurantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAccountStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Validate, suspend or ban restaurant",
+        "description": "admin endpoint. Validate, suspend or ban restaurant"
+      }
+    },
+    "/admin/transactions": {
+      "get": {
+        "operationId": "AdminController_getTransactions",
+        "parameters": [
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Payment transaction supervision",
+        "description": "admin endpoint. Payment transaction supervision"
+      }
+    },
+    "/admin/subscriptions": {
+      "get": {
+        "operationId": "AdminController_getSubscriptions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Restaurant billing supervision",
+        "description": "admin endpoint. Restaurant billing supervision"
+      }
+    },
+    "/admin/disputes": {
+      "get": {
+        "operationId": "AdminController_getDisputes",
+        "parameters": [
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Open customer restaurant disputes",
+        "description": "admin endpoint. Open customer restaurant disputes"
+      }
+    },
+    "/admin/disputes/{disputeId}/resolve": {
+      "patch": {
+        "operationId": "AdminController_resolveDispute",
+        "parameters": [
+          {
+            "name": "disputeId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResolveDisputeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Resolve dispute",
+        "description": "admin endpoint. Resolve dispute"
+      }
+    },
+    "/admin/reports": {
+      "get": {
+        "operationId": "AdminController_getReports",
+        "parameters": [
+          {
+            "name": "period",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Platform activity reports",
+        "description": "admin endpoint. Platform activity reports"
+      }
+    },
+    "/admin/fraud/alerts": {
+      "get": {
+        "operationId": "AdminController_getFraudAlerts",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Fraud and anomaly alerts",
+        "description": "admin endpoint. Fraud and anomaly alerts"
+      }
+    },
+    "/analytics/restaurant/summary": {
+      "get": {
+        "operationId": "AnalyticsController_getRestaurantSummary",
+        "parameters": [
+          {
+            "name": "period",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Analytics"
+        ],
+        "summary": "Restaurant KPIs",
+        "description": "restaurant endpoint. Restaurant KPIs"
+      }
+    },
+    "/analytics/restaurant/popular-dishes": {
+      "get": {
+        "operationId": "AnalyticsController_getPopularDishes",
+        "parameters": [
+          {
+            "name": "period",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Analytics"
+        ],
+        "summary": "Popular dishes report",
+        "description": "restaurant endpoint. Popular dishes report"
+      }
+    },
+    "/analytics/admin/kpis": {
+      "get": {
+        "operationId": "AnalyticsController_getAdminKpis",
+        "parameters": [
+          {
+            "name": "period",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Analytics"
+        ],
+        "summary": "Admin KPI report",
+        "description": "admin endpoint. Admin KPI report"
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          }
+        },
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Create account with full name and phone",
+        "description": "client endpoint. Create account with full name and phone"
+      }
+    },
+    "/auth/otp/verify": {
+      "post": {
+        "operationId": "AuthController_verifyOtp",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyOtpDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          }
+        },
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Verify WhatsApp/SMS OTP",
+        "description": "client endpoint. Verify WhatsApp/SMS OTP"
+      }
+    },
+    "/auth/otp/resend": {
+      "post": {
+        "operationId": "AuthController_resendOtp",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          }
+        },
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Resend OTP challenge",
+        "description": "client endpoint. Resend OTP challenge"
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          }
+        },
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Phone and password login",
+        "description": "client endpoint. Phone and password login"
+      }
+    },
+    "/auth/password/forgot": {
+      "post": {
+        "operationId": "AuthController_forgotPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          }
+        },
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Start password recovery",
+        "description": "client endpoint. Start password recovery"
+      }
+    },
+    "/auth/password/reset": {
+      "post": {
+        "operationId": "AuthController_resetPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          }
+        },
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Reset password with OTP",
+        "description": "client endpoint. Reset password with OTP"
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          }
+        },
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Revoke current session",
+        "description": "client endpoint. Revoke current session"
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "operationId": "AuthController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          }
+        },
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Current authenticated profile",
+        "description": "client endpoint. Current authenticated profile"
+      }
+    },
+    "/cart": {
+      "get": {
+        "operationId": "CartController_getCart",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Cart"
+        ],
+        "summary": "Current cart summary",
+        "description": "client endpoint. Current cart summary"
+      },
+      "delete": {
+        "operationId": "CartController_clear",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Cart"
+        ],
+        "summary": "Clear cart",
+        "description": "client endpoint. Clear cart"
+      }
+    },
+    "/cart/items": {
+      "post": {
+        "operationId": "CartController_addItem",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddCartItemDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Cart"
+        ],
+        "summary": "Add dish to cart",
+        "description": "client endpoint. Add dish to cart"
+      }
+    },
+    "/cart/items/{itemId}": {
+      "patch": {
+        "operationId": "CartController_updateItem",
+        "parameters": [
+          {
+            "name": "itemId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCartItemDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Cart"
+        ],
+        "summary": "Update cart quantity/options",
+        "description": "client endpoint. Update cart quantity/options"
+      },
+      "delete": {
+        "operationId": "CartController_removeItem",
+        "parameters": [
+          {
+            "name": "itemId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Cart"
+        ],
+        "summary": "Remove cart item",
+        "description": "client endpoint. Remove cart item"
+      }
+    },
+    "/cart/fulfillment": {
+      "patch": {
+        "operationId": "CartController_updateFulfillment",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCartFulfillmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Cart"
+        ],
+        "summary": "Set pickup or delivery mode",
+        "description": "client endpoint. Set pickup or delivery mode"
+      }
+    },
+    "/cart/instructions": {
+      "patch": {
+        "operationId": "CartController_updateInstructions",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCartInstructionsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Cart"
+        ],
+        "summary": "Set special instructions",
+        "description": "client endpoint. Set special instructions"
+      }
+    },
+    "/cart/validate-promo": {
+      "post": {
+        "operationId": "CartController_validatePromoCode",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidatePromoCodeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Cart"
+        ],
+        "summary": "Validate promo code",
+        "description": "client endpoint. Validate promo code"
+      }
+    },
+    "/cart/checkout": {
+      "post": {
+        "operationId": "CartController_checkout",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckoutCartDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Cart"
+        ],
+        "summary": "Create pending order from cart",
+        "description": "client endpoint. Create pending order from cart"
+      }
+    },
+    "/chat/conversations": {
+      "get": {
+        "operationId": "ChatController_findConversations",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Customer restaurant conversations",
+        "description": "client endpoint. Customer restaurant conversations"
+      },
+      "post": {
+        "operationId": "ChatController_createConversation",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateConversationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Create conversation",
+        "description": "client endpoint. Create conversation"
+      }
+    },
+    "/chat/conversations/{conversationId}/messages": {
+      "get": {
+        "operationId": "ChatController_findMessages",
+        "parameters": [
+          {
+            "name": "conversationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Conversation messages",
+        "description": "client endpoint. Conversation messages"
+      },
+      "post": {
+        "operationId": "ChatController_sendMessage",
+        "parameters": [
+          {
+            "name": "conversationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateChatMessageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Send message",
+        "description": "client endpoint. Send message"
+      }
+    },
+    "/chat/conversations/{conversationId}/read": {
+      "patch": {
+        "operationId": "ChatController_markAsRead",
+        "parameters": [
+          {
+            "name": "conversationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Mark conversation read",
+        "description": "client endpoint. Mark conversation read"
+      }
+    },
+    "/content/onboarding-slides": {
+      "get": {
+        "operationId": "ContentController_getOnboardingSlides",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          }
+        },
+        "tags": [
+          "Content"
+        ],
+        "summary": "Onboarding carousel content",
+        "description": "platform endpoint. Onboarding carousel content"
+      }
+    },
+    "/content/app-config": {
+      "get": {
+        "operationId": "ContentController_getAppConfig",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          }
+        },
+        "tags": [
+          "Content"
+        ],
+        "summary": "Mobile app configuration",
+        "description": "platform endpoint. Mobile app configuration"
+      }
+    },
+    "/content/legal/{page}": {
+      "get": {
+        "operationId": "ContentController_getLegalPage",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          }
+        },
+        "tags": [
+          "Content"
+        ],
+        "summary": "Privacy and terms pages",
+        "description": "platform endpoint. Privacy and terms pages"
+      }
+    },
+    "/content/help": {
+      "get": {
+        "operationId": "ContentController_getHelp",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          }
+        },
+        "tags": [
+          "Content"
+        ],
+        "summary": "Help topics and support channels",
+        "description": "platform endpoint. Help topics and support channels"
+      }
+    },
+    "/deliveries/{orderId}": {
+      "get": {
+        "operationId": "DeliveryController_getDelivery",
+        "parameters": [
+          {
+            "name": "orderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Delivery"
+        ],
+        "summary": "Delivery assignment and status",
+        "description": "client endpoint. Delivery assignment and status"
+      }
+    },
+    "/deliveries/{orderId}/eta": {
+      "get": {
+        "operationId": "DeliveryController_getEta",
+        "parameters": [
+          {
+            "name": "orderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Delivery"
+        ],
+        "summary": "Delivery ETA",
+        "description": "client endpoint. Delivery ETA"
+      }
+    },
+    "/deliveries/{orderId}/status": {
+      "patch": {
+        "operationId": "DeliveryController_updateStatus",
+        "parameters": [
+          {
+            "name": "orderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOrderStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Delivery"
+        ],
+        "summary": "Update delivery status",
+        "description": "restaurant endpoint. Update delivery status"
+      }
+    },
+    "/deliveries/{orderId}/location": {
+      "patch": {
+        "operationId": "DeliveryController_updateLocation",
+        "parameters": [
+          {
+            "name": "orderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDeliveryLocationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Delivery"
+        ],
+        "summary": "Update courier location",
+        "description": "restaurant endpoint. Update courier location"
+      }
+    },
+    "/favorites": {
+      "get": {
+        "operationId": "FavoritesController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Favorites"
+        ],
+        "summary": "Favorite restaurants list",
+        "description": "client endpoint. Favorite restaurants list"
+      }
+    },
+    "/favorites/restaurants/{restaurantId}": {
+      "post": {
+        "operationId": "FavoritesController_addRestaurant",
+        "parameters": [
+          {
+            "name": "restaurantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Favorites"
+        ],
+        "summary": "Add restaurant favorite",
+        "description": "client endpoint. Add restaurant favorite"
+      },
+      "delete": {
+        "operationId": "FavoritesController_removeRestaurant",
+        "parameters": [
+          {
+            "name": "restaurantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Favorites"
+        ],
+        "summary": "Remove restaurant favorite",
+        "description": "client endpoint. Remove restaurant favorite"
+      }
+    },
+    "/notifications": {
+      "get": {
+        "operationId": "NotificationsController_findAll",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Notification center",
+        "description": "client endpoint. Notification center"
+      }
+    },
+    "/notifications/{notificationId}/read": {
+      "patch": {
+        "operationId": "NotificationsController_markAsRead",
+        "parameters": [
+          {
+            "name": "notificationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Mark one notification read",
+        "description": "client endpoint. Mark one notification read"
+      }
+    },
+    "/notifications/read-all": {
+      "patch": {
+        "operationId": "NotificationsController_markAllAsRead",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Mark all notifications read",
+        "description": "client endpoint. Mark all notifications read"
+      }
+    },
+    "/notifications/push-tokens": {
+      "post": {
+        "operationId": "NotificationsController_registerPushToken",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Register push token",
+        "description": "client endpoint. Register push token"
+      }
+    },
+    "/notifications/push-tokens/{tokenId}": {
+      "delete": {
+        "operationId": "NotificationsController_deletePushToken",
+        "parameters": [
+          {
+            "name": "tokenId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Delete push token",
+        "description": "client endpoint. Delete push token"
+      }
+    },
+    "/notifications/preferences": {
+      "patch": {
+        "operationId": "NotificationsController_updatePreferences",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePreferencesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Update notification preferences",
+        "description": "client endpoint. Update notification preferences"
+      }
+    },
+    "/orders": {
+      "get": {
+        "operationId": "OrdersController_findAll",
+        "parameters": [
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Order history and filters",
+        "description": "client endpoint. Order history and filters"
+      }
+    },
+    "/orders/{orderId}": {
+      "get": {
+        "operationId": "OrdersController_findOne",
+        "parameters": [
+          {
+            "name": "orderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Order detail",
+        "description": "client endpoint. Order detail"
+      }
+    },
+    "/orders/{orderId}/tracking": {
+      "get": {
+        "operationId": "OrdersController_track",
+        "parameters": [
+          {
+            "name": "orderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Preparation and delivery tracking",
+        "description": "client endpoint. Preparation and delivery tracking"
+      }
+    },
+    "/orders/{orderId}/reorder": {
+      "post": {
+        "operationId": "OrdersController_reorder",
+        "parameters": [
+          {
+            "name": "orderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Recreate cart from old order",
+        "description": "client endpoint. Recreate cart from old order"
+      }
+    },
+    "/orders/{orderId}/cancel": {
+      "post": {
+        "operationId": "OrdersController_cancel",
+        "parameters": [
+          {
+            "name": "orderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Cancel order",
+        "description": "client endpoint. Cancel order"
+      }
+    },
+    "/orders/{orderId}/pickup-code/verify": {
+      "post": {
+        "operationId": "OrdersController_verifyPickupCode",
+        "parameters": [
+          {
+            "name": "orderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Verify pickup handoff code",
+        "description": "restaurant endpoint. Verify pickup handoff code"
+      }
+    },
+    "/payments/methods": {
+      "get": {
+        "operationId": "PaymentsController_getProviders",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Payments"
+        ],
+        "summary": "Supported payment providers",
+        "description": "client endpoint. Supported payment providers"
+      }
+    },
+    "/payments/initiate": {
+      "post": {
+        "operationId": "PaymentsController_initiate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InitiatePaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Payments"
+        ],
+        "summary": "Start Mobile Money/card payment",
+        "description": "client endpoint. Start Mobile Money/card payment"
+      }
+    },
+    "/payments/{paymentId}/confirm": {
+      "post": {
+        "operationId": "PaymentsController_confirm",
+        "parameters": [
+          {
+            "name": "paymentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmPaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Payments"
+        ],
+        "summary": "Confirm payment provider reference",
+        "description": "client endpoint. Confirm payment provider reference"
+      }
+    },
+    "/payments/{paymentId}": {
+      "get": {
+        "operationId": "PaymentsController_getPayment",
+        "parameters": [
+          {
+            "name": "paymentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Payments"
+        ],
+        "summary": "Payment status",
+        "description": "client endpoint. Payment status"
+      }
+    },
+    "/payments/webhooks/{provider}": {
+      "post": {
+        "operationId": "PaymentsController_handleWebhook",
+        "parameters": [
+          {
+            "name": "provider",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Payments"
+        ],
+        "summary": "Payment provider callback",
+        "description": "platform endpoint. Payment provider callback"
+      }
+    },
+    "/payments/{paymentId}/refund-request": {
+      "post": {
+        "operationId": "PaymentsController_requestRefund",
+        "parameters": [
+          {
+            "name": "paymentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Payments"
+        ],
+        "summary": "Request refund",
+        "description": "client endpoint. Request refund"
+      }
+    },
+    "/promotions": {
+      "get": {
+        "operationId": "PromotionsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Promotions"
+        ],
+        "summary": "Available promotions",
+        "description": "client endpoint. Available promotions"
+      }
+    },
+    "/promotions/today": {
+      "get": {
+        "operationId": "PromotionsController_getToday",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Promotions"
+        ],
+        "summary": "Offer of the day",
+        "description": "client endpoint. Offer of the day"
+      }
+    },
+    "/promotions/validate-code": {
+      "post": {
+        "operationId": "PromotionsController_validateCode",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidatePromoCodeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Promotions"
+        ],
+        "summary": "Validate promo code",
+        "description": "client endpoint. Validate promo code"
+      }
+    },
+    "/promotions/{promotionId}/redeem": {
+      "post": {
+        "operationId": "PromotionsController_redeem",
+        "parameters": [
+          {
+            "name": "promotionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Promotions"
+        ],
+        "summary": "Apply promotion to cart",
+        "description": "client endpoint. Apply promotion to cart"
+      }
+    },
+    "/referrals/me": {
+      "get": {
+        "operationId": "ReferralsController_getMine",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Referrals"
+        ],
+        "summary": "Referral code and stats",
+        "description": "client endpoint. Referral code and stats"
+      }
+    },
+    "/referrals/share-intent": {
+      "post": {
+        "operationId": "ReferralsController_createShareIntent",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Referrals"
+        ],
+        "summary": "Create tracked share text",
+        "description": "client endpoint. Create tracked share text"
+      }
+    },
+    "/referrals/validate-code": {
+      "post": {
+        "operationId": "ReferralsController_validateCode",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Referrals"
+        ],
+        "summary": "Validate referral code",
+        "description": "client endpoint. Validate referral code"
+      }
+    },
+    "/restaurant-dashboard/profile": {
+      "get": {
+        "operationId": "RestaurantDashboardController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "RestaurantDashboard"
+        ],
+        "summary": "Restaurant profile",
+        "description": "restaurant endpoint. Restaurant profile"
+      },
+      "patch": {
+        "operationId": "RestaurantDashboardController_updateProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRestaurantProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "RestaurantDashboard"
+        ],
+        "summary": "Patch restaurant profile",
+        "description": "restaurant endpoint. Patch restaurant profile"
+      },
+      "put": {
+        "operationId": "RestaurantDashboardController_replaceProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRestaurantProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "RestaurantDashboard"
+        ],
+        "summary": "Replace restaurant profile",
+        "description": "restaurant endpoint. Replace restaurant profile"
+      }
+    },
+    "/restaurant-dashboard/orders": {
+      "get": {
+        "operationId": "RestaurantDashboardController_getOrders",
+        "parameters": [
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "RestaurantDashboard"
+        ],
+        "summary": "Restaurant order queue",
+        "description": "restaurant endpoint. Restaurant order queue"
+      }
+    },
+    "/restaurant-dashboard/orders/{orderId}": {
+      "get": {
+        "operationId": "RestaurantDashboardController_getOrder",
+        "parameters": [
+          {
+            "name": "orderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "RestaurantDashboard"
+        ],
+        "summary": "Restaurant order detail with customer, items, fulfillment and payment",
+        "description": "restaurant endpoint. Restaurant order detail with customer, items, fulfillment and payment"
+      }
+    },
+    "/restaurant-dashboard/orders/{orderId}/status": {
+      "patch": {
+        "operationId": "RestaurantDashboardController_updateOrderStatus",
+        "parameters": [
+          {
+            "name": "orderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOrderStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "RestaurantDashboard"
+        ],
+        "summary": "Accept, prepare, ready or deliver order",
+        "description": "restaurant endpoint. Accept, prepare, ready or deliver order"
+      }
+    },
+    "/restaurant-dashboard/menu-items": {
+      "get": {
+        "operationId": "RestaurantDashboardController_getMenuItems",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "RestaurantDashboard"
+        ],
+        "summary": "Manage menu item list",
+        "description": "restaurant endpoint. Manage menu item list"
+      },
+      "post": {
+        "operationId": "RestaurantDashboardController_createMenuItem",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMenuItemDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "RestaurantDashboard"
+        ],
+        "summary": "Create menu item",
+        "description": "restaurant endpoint. Create menu item"
+      }
+    },
+    "/restaurant-dashboard/menu-categories": {
+      "get": {
+        "operationId": "RestaurantDashboardController_getMenuCategories",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "RestaurantDashboard"
+        ],
+        "summary": "Manage menu category list",
+        "description": "restaurant endpoint. Manage menu category list"
+      },
+      "post": {
+        "operationId": "RestaurantDashboardController_createMenuCategory",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMenuCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "RestaurantDashboard"
+        ],
+        "summary": "Create menu category",
+        "description": "restaurant endpoint. Create menu category"
+      }
+    },
+    "/restaurant-dashboard/menu-categories/{categoryId}": {
+      "put": {
+        "operationId": "RestaurantDashboardController_updateMenuCategory",
+        "parameters": [
+          {
+            "name": "categoryId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMenuCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "RestaurantDashboard"
+        ],
+        "summary": "Replace menu category",
+        "description": "restaurant endpoint. Replace menu category"
+      },
+      "delete": {
+        "operationId": "RestaurantDashboardController_removeMenuCategory",
+        "parameters": [
+          {
+            "name": "categoryId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "RestaurantDashboard"
+        ],
+        "summary": "Delete menu category",
+        "description": "restaurant endpoint. Delete menu category"
+      }
+    },
+    "/restaurant-dashboard/menu-categories/{categoryId}/sort-order": {
+      "patch": {
+        "operationId": "RestaurantDashboardController_updateMenuCategorySortOrder",
+        "parameters": [
+          {
+            "name": "categoryId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMenuCategorySortOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "RestaurantDashboard"
+        ],
+        "summary": "Reorder menu category",
+        "description": "restaurant endpoint. Reorder menu category"
+      }
+    },
+    "/restaurant-dashboard/menu-items/{itemId}": {
+      "put": {
+        "operationId": "RestaurantDashboardController_updateMenuItem",
+        "parameters": [
+          {
+            "name": "itemId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMenuItemDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "RestaurantDashboard"
+        ],
+        "summary": "Replace menu item",
+        "description": "restaurant endpoint. Replace menu item"
+      },
+      "delete": {
+        "operationId": "RestaurantDashboardController_removeMenuItem",
+        "parameters": [
+          {
+            "name": "itemId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "RestaurantDashboard"
+        ],
+        "summary": "Delete menu item",
+        "description": "restaurant endpoint. Delete menu item"
+      }
+    },
+    "/restaurant-dashboard/menu-items/{itemId}/availability": {
+      "patch": {
+        "operationId": "RestaurantDashboardController_updateMenuItemAvailability",
+        "parameters": [
+          {
+            "name": "itemId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "RestaurantDashboard"
+        ],
+        "summary": "Toggle dish availability",
+        "description": "restaurant endpoint. Toggle dish availability"
+      }
+    },
+    "/restaurant-dashboard/hours": {
+      "get": {
+        "operationId": "RestaurantDashboardController_getHours",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "RestaurantDashboard"
+        ],
+        "summary": "Opening hours",
+        "description": "restaurant endpoint. Opening hours"
+      },
+      "put": {
+        "operationId": "RestaurantDashboardController_updateHours",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRestaurantHoursDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "RestaurantDashboard"
+        ],
+        "summary": "Replace opening hours for a day",
+        "description": "restaurant endpoint. Replace opening hours for a day"
+      }
+    },
+    "/restaurant-dashboard/promotions": {
+      "get": {
+        "operationId": "RestaurantDashboardController_getPromotions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "RestaurantDashboard"
+        ],
+        "summary": "Restaurant promotions",
+        "description": "restaurant endpoint. Restaurant promotions"
+      },
+      "post": {
+        "operationId": "RestaurantDashboardController_createPromotion",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePromotionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "RestaurantDashboard"
+        ],
+        "summary": "Create promotion",
+        "description": "restaurant endpoint. Create promotion"
+      }
+    },
+    "/restaurant-dashboard/analytics/summary": {
+      "get": {
+        "operationId": "RestaurantDashboardController_getAnalytics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "RestaurantDashboard"
+        ],
+        "summary": "Restaurant dashboard analytics",
+        "description": "restaurant endpoint. Restaurant dashboard analytics"
+      }
+    },
+    "/restaurant-dashboard/chat/conversations": {
+      "get": {
+        "operationId": "RestaurantDashboardController_getConversations",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "RestaurantDashboard"
+        ],
+        "summary": "Restaurant chat inbox",
+        "description": "restaurant endpoint. Restaurant chat inbox"
+      }
+    },
+    "/restaurants": {
+      "get": {
+        "operationId": "RestaurantsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          }
+        },
+        "tags": [
+          "Restaurants"
+        ],
+        "summary": "Nearby restaurant listing",
+        "description": "client endpoint. Nearby restaurant listing"
+      }
+    },
+    "/search": {
+      "get": {
+        "operationId": "RestaurantsController_search",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          }
+        },
+        "tags": [
+          "Restaurants"
+        ],
+        "summary": "Restaurant and dish search",
+        "description": "client endpoint. Restaurant and dish search"
+      }
+    },
+    "/search/filters": {
+      "get": {
+        "operationId": "RestaurantsController_getFilters",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          }
+        },
+        "tags": [
+          "Restaurants"
+        ],
+        "summary": "Available search filters",
+        "description": "client endpoint. Available search filters"
+      }
+    },
+    "/restaurants/{restaurantId}": {
+      "get": {
+        "operationId": "RestaurantsController_findOne",
+        "parameters": [
+          {
+            "name": "restaurantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          }
+        },
+        "tags": [
+          "Restaurants"
+        ],
+        "summary": "Restaurant detail",
+        "description": "client endpoint. Restaurant detail"
+      }
+    },
+    "/restaurants/{restaurantId}/menu": {
+      "get": {
+        "operationId": "RestaurantsController_getMenu",
+        "parameters": [
+          {
+            "name": "restaurantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          }
+        },
+        "tags": [
+          "Restaurants"
+        ],
+        "summary": "Restaurant menu categories and items",
+        "description": "client endpoint. Restaurant menu categories and items"
+      }
+    },
+    "/restaurants/{restaurantId}/menu/items/{itemId}": {
+      "get": {
+        "operationId": "RestaurantsController_getMenuItem",
+        "parameters": [
+          {
+            "name": "restaurantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "itemId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          }
+        },
+        "tags": [
+          "Restaurants"
+        ],
+        "summary": "Dish detail and accompaniments",
+        "description": "client endpoint. Dish detail and accompaniments"
+      }
+    },
+    "/restaurants/{restaurantId}/reviews": {
+      "get": {
+        "operationId": "RestaurantsController_getReviews",
+        "parameters": [
+          {
+            "name": "restaurantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          }
+        },
+        "tags": [
+          "Restaurants"
+        ],
+        "summary": "Restaurant public reviews",
+        "description": "client endpoint. Restaurant public reviews"
+      }
+    },
+    "/reviews/me": {
+      "get": {
+        "operationId": "ReviewsController_findMine",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Reviews"
+        ],
+        "summary": "My reviews",
+        "description": "client endpoint. My reviews"
+      }
+    },
+    "/reviews": {
+      "post": {
+        "operationId": "ReviewsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Reviews"
+        ],
+        "summary": "Create order review",
+        "description": "client endpoint. Create order review"
+      }
+    },
+    "/reviews/{reviewId}": {
+      "patch": {
+        "operationId": "ReviewsController_update",
+        "parameters": [
+          {
+            "name": "reviewId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateReviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Reviews"
+        ],
+        "summary": "Update review",
+        "description": "client endpoint. Update review"
+      },
+      "delete": {
+        "operationId": "ReviewsController_remove",
+        "parameters": [
+          {
+            "name": "reviewId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Reviews"
+        ],
+        "summary": "Delete review",
+        "description": "client endpoint. Delete review"
+      }
+    },
+    "/reviews/moderation/pending": {
+      "get": {
+        "operationId": "ReviewsController_getPendingModeration",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Reviews"
+        ],
+        "summary": "Pending review moderation queue",
+        "description": "admin endpoint. Pending review moderation queue"
+      }
+    },
+    "/subscriptions/plans": {
+      "get": {
+        "operationId": "SubscriptionsController_getPlans",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Subscriptions"
+        ],
+        "summary": "Starter, Pro and Premium plans",
+        "description": "restaurant endpoint. Starter, Pro and Premium plans"
+      }
+    },
+    "/subscriptions/restaurant/current": {
+      "get": {
+        "operationId": "SubscriptionsController_getCurrentRestaurantSubscription",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Subscriptions"
+        ],
+        "summary": "Current restaurant subscription",
+        "description": "restaurant endpoint. Current restaurant subscription"
+      }
+    },
+    "/subscriptions/restaurant/subscribe": {
+      "post": {
+        "operationId": "SubscriptionsController_subscribeRestaurant",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubscribeRestaurantDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Subscriptions"
+        ],
+        "summary": "Subscribe restaurant to plan",
+        "description": "restaurant endpoint. Subscribe restaurant to plan"
+      }
+    },
+    "/subscriptions/restaurant/{subscriptionId}": {
+      "patch": {
+        "operationId": "SubscriptionsController_changeRestaurantSubscription",
+        "parameters": [
+          {
+            "name": "subscriptionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubscribeRestaurantDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Subscriptions"
+        ],
+        "summary": "Change restaurant subscription",
+        "description": "restaurant endpoint. Change restaurant subscription"
+      }
+    },
+    "/subscriptions/restaurant/{subscriptionId}/cancel": {
+      "post": {
+        "operationId": "SubscriptionsController_cancelRestaurantSubscription",
+        "parameters": [
+          {
+            "name": "subscriptionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Subscriptions"
+        ],
+        "summary": "Cancel restaurant subscription",
+        "description": "restaurant endpoint. Cancel restaurant subscription"
+      }
+    },
+    "/subscriptions/invoices": {
+      "get": {
+        "operationId": "SubscriptionsController_getInvoices",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Subscriptions"
+        ],
+        "summary": "Restaurant invoices",
+        "description": "restaurant endpoint. Restaurant invoices"
+      }
+    },
+    "/uploads/menu-items/sign": {
+      "post": {
+        "operationId": "UploadsController_signMenuItemUpload",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Uploads"
+        ],
+        "summary": "Sign menu item photo upload",
+        "description": "restaurant endpoint. Sign menu item photo upload"
+      }
+    },
+    "/uploads/reviews/sign": {
+      "post": {
+        "operationId": "UploadsController_signReviewUpload",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Uploads"
+        ],
+        "summary": "Sign review photo upload",
+        "description": "client endpoint. Sign review photo upload"
+      }
+    },
+    "/uploads/complete/menu-items": {
+      "post": {
+        "operationId": "UploadsController_completeMenuItemUpload",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadCompleteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Uploads"
+        ],
+        "summary": "Complete menu item photo upload",
+        "description": "restaurant endpoint. Complete menu item photo upload"
+      }
+    },
+    "/uploads/complete/reviews": {
+      "post": {
+        "operationId": "UploadsController_completeReviewUpload",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadCompleteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Uploads"
+        ],
+        "summary": "Complete review photo upload",
+        "description": "client endpoint. Complete review photo upload"
+      }
+    },
+    "/users/me": {
+      "get": {
+        "operationId": "UsersController_getMe",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "summary": "Profile details",
+        "description": "client endpoint. Profile details"
+      },
+      "patch": {
+        "operationId": "UsersController_updateMe",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update profile details",
+        "description": "client endpoint. Update profile details"
+      }
+    },
+    "/users/me/preferences": {
+      "get": {
+        "operationId": "UsersController_getPreferences",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "summary": "Notification, language and privacy preferences",
+        "description": "client endpoint. Notification, language and privacy preferences"
+      },
+      "patch": {
+        "operationId": "UsersController_updatePreferences",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePreferencesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update app preferences",
+        "description": "client endpoint. Update app preferences"
+      }
+    },
+    "/users/me/payment-methods": {
+      "get": {
+        "operationId": "UsersController_getPaymentMethods",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "summary": "Saved payment methods",
+        "description": "client endpoint. Saved payment methods"
+      },
+      "post": {
+        "operationId": "UsersController_addPaymentMethod",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePaymentMethodDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "summary": "Add payment method",
+        "description": "client endpoint. Add payment method"
+      }
+    },
+    "/users/me/payment-methods/{paymentMethodId}": {
+      "delete": {
+        "operationId": "UsersController_removePaymentMethod",
+        "parameters": [
+          {
+            "name": "paymentMethodId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "summary": "Remove payment method",
+        "description": "client endpoint. Remove payment method"
+      }
+    },
+    "/users/me/data-export": {
+      "get": {
+        "operationId": "UsersController_exportData",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "summary": "Request personal data export",
+        "description": "client endpoint. Request personal data export"
+      }
+    },
+    "/users/me/delete-request": {
+      "post": {
+        "operationId": "UsersController_requestDeletion",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Operation successful."
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid request payload or query."
+          },
+          "401": {
+            "description": "Authentication is required."
+          },
+          "403": {
+            "description": "Insufficient permissions."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "summary": "Request account deletion",
+        "description": "client endpoint. Request account deletion"
+      }
+    }
+  },
+  "info": {
+    "title": "FastEat Benin API",
+    "description": "Backend NestJS pour la commande programmee, la livraison restaurant, les paiements, le dashboard restaurant et le back-office FastEat.",
+    "version": "0.1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "/api/v1",
+      "description": "API v1 locale"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "name": "Authorization",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "UpdateAccountStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "suspended",
+              "banned",
+              "pending_validation"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "example": "Documents restaurant manquants."
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "ResolveDisputeDto": {
+        "type": "object",
+        "properties": {
+          "resolution": {
+            "type": "string",
+            "enum": [
+              "refund_customer",
+              "pay_restaurant",
+              "partial_refund",
+              "no_action"
+            ]
+          },
+          "comment": {
+            "type": "string",
+            "example": "Retard confirme par le restaurant."
+          }
+        },
+        "required": [
+          "resolution"
+        ]
+      },
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "example": "Kofi Mensah"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+22990000000"
+          },
+          "referralCode": {
+            "type": "string",
+            "example": "FAST-2024"
+          }
+        },
+        "required": [
+          "fullName",
+          "phoneNumber"
+        ]
+      },
+      "VerifyOtpDto": {
+        "type": "object",
+        "properties": {
+          "phoneNumber": {
+            "type": "string",
+            "example": "+22990000000"
+          },
+          "code": {
+            "type": "string",
+            "example": "123456"
+          }
+        },
+        "required": [
+          "phoneNumber",
+          "code"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "phoneNumber": {
+            "type": "string",
+            "example": "+22990000000"
+          },
+          "password": {
+            "type": "string",
+            "example": "password-secret"
+          }
+        },
+        "required": [
+          "phoneNumber",
+          "password"
+        ]
+      },
+      "ForgotPasswordDto": {
+        "type": "object",
+        "properties": {
+          "phoneNumber": {
+            "type": "string",
+            "example": "+22990000000"
+          }
+        },
+        "required": [
+          "phoneNumber"
+        ]
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "phoneNumber": {
+            "type": "string",
+            "example": "+22990000000"
+          },
+          "code": {
+            "type": "string",
+            "example": "123456"
+          },
+          "password": {
+            "type": "string",
+            "example": "new-password-secret"
+          }
+        },
+        "required": [
+          "phoneNumber",
+          "code",
+          "password"
+        ]
+      },
+      "AddCartItemDto": {
+        "type": "object",
+        "properties": {
+          "restaurantId": {
+            "type": "string",
+            "example": "rst_tantie_adjoua"
+          },
+          "menuItemId": {
+            "type": "string",
+            "example": "item_riz_poulet"
+          },
+          "quantity": {
+            "type": "number",
+            "example": 2,
+            "minimum": 1
+          },
+          "accompanimentId": {
+            "type": "string",
+            "example": "attassi"
+          },
+          "notes": {
+            "type": "string",
+            "example": "Sans piment"
+          }
+        },
+        "required": [
+          "restaurantId",
+          "menuItemId",
+          "quantity"
+        ]
+      },
+      "UpdateCartItemDto": {
+        "type": "object",
+        "properties": {
+          "quantity": {
+            "type": "number",
+            "example": 3,
+            "minimum": 0
+          },
+          "accompanimentId": {
+            "type": "string",
+            "example": "aloko"
+          },
+          "notes": {
+            "type": "string",
+            "example": "Ajouter sauce a part"
+          }
+        }
+      },
+      "UpdateCartFulfillmentDto": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "scheduled_pickup",
+              "delivery",
+              "pickup_now"
+            ]
+          },
+          "pickupTime": {
+            "type": "string",
+            "example": "12:30"
+          },
+          "deliveryAddressId": {
+            "type": "string",
+            "example": "addr_home"
+          }
+        },
+        "required": [
+          "mode"
+        ]
+      },
+      "UpdateCartInstructionsDto": {
+        "type": "object",
+        "properties": {
+          "instructions": {
+            "type": "string",
+            "example": "Mettre les boissons dans un sac separe."
+          }
+        },
+        "required": [
+          "instructions"
+        ]
+      },
+      "ValidatePromoCodeDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "MIDI10"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "CheckoutCartDto": {
+        "type": "object",
+        "properties": {
+          "paymentProvider": {
+            "type": "string",
+            "enum": [
+              "mtn_momo",
+              "moov_money",
+              "celtiis",
+              "card"
+            ]
+          },
+          "paymentPhoneNumber": {
+            "type": "string",
+            "example": "+22990000000"
+          },
+          "savePaymentMethod": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "paymentProvider"
+        ]
+      },
+      "CreateConversationDto": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "example": "ord_1001"
+          },
+          "restaurantId": {
+            "type": "string",
+            "example": "rst_tantie_adjoua"
+          },
+          "subject": {
+            "type": "string",
+            "example": "Question sur la commande"
+          }
+        },
+        "required": [
+          "restaurantId"
+        ]
+      },
+      "CreateChatMessageDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Pouvez-vous retirer le piment ?"
+          },
+          "attachmentUrl": {
+            "type": "string",
+            "example": "https://cdn.fasteat.local/chat/image.jpg"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "UpdateOrderStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "accepted",
+              "rejected",
+              "preparing",
+              "ready",
+              "out_for_delivery",
+              "delivered",
+              "cancelled"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "example": "Plat indisponible"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "UpdateDeliveryLocationDto": {
+        "type": "object",
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "example": 6.3703
+          },
+          "longitude": {
+            "type": "number",
+            "example": 2.3912
+          },
+          "accuracy": {
+            "type": "number",
+            "example": 25
+          }
+        },
+        "required": [
+          "latitude",
+          "longitude"
+        ]
+      },
+      "UpdatePreferencesDto": {
+        "type": "object",
+        "properties": {
+          "orderNotifications": {
+            "type": "boolean",
+            "example": true
+          },
+          "offersAndPromotions": {
+            "type": "boolean",
+            "example": false
+          },
+          "discreetDeliveryMode": {
+            "type": "boolean",
+            "example": false
+          },
+          "darkMode": {
+            "type": "boolean",
+            "example": false
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "fr",
+              "en",
+              "fon",
+              "yoruba"
+            ],
+            "example": "fr"
+          }
+        }
+      },
+      "InitiatePaymentDto": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "example": "ord_pending_1003"
+          },
+          "provider": {
+            "type": "string",
+            "enum": [
+              "mtn_momo",
+              "moov_money",
+              "celtiis",
+              "card"
+            ]
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+22990000000"
+          }
+        },
+        "required": [
+          "orderId",
+          "provider"
+        ]
+      },
+      "ConfirmPaymentDto": {
+        "type": "object",
+        "properties": {
+          "providerReference": {
+            "type": "string",
+            "example": "provider-ref-123"
+          },
+          "otp": {
+            "type": "string",
+            "example": "123456"
+          }
+        },
+        "required": [
+          "providerReference"
+        ]
+      },
+      "UpdateRestaurantProfileDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Chez Tantie Adjoua"
+          },
+          "description": {
+            "type": "string",
+            "example": "Cuisine beninoise familiale."
+          },
+          "cuisineType": {
+            "type": "string",
+            "example": "Beninoise"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+22990000000"
+          },
+          "address": {
+            "type": "string",
+            "example": "Haie Vive, Cotonou"
+          },
+          "deliveryEnabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "scheduledPickupEnabled": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "CreateMenuCategoryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Plats de resistance"
+          },
+          "description": {
+            "type": "string",
+            "example": "Plats principaux servis au dejeuner."
+          },
+          "sortOrder": {
+            "type": "number",
+            "example": 2
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UpdateMenuCategoryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Plats de resistance"
+          },
+          "description": {
+            "type": "string",
+            "example": "Plats principaux servis au dejeuner."
+          },
+          "sortOrder": {
+            "type": "number",
+            "example": 2
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UpdateMenuCategorySortOrderDto": {
+        "type": "object",
+        "properties": {
+          "sortOrder": {
+            "type": "number",
+            "example": 2
+          }
+        },
+        "required": [
+          "sortOrder"
+        ]
+      },
+      "CreateMenuItemDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Riz au gras + Poulet braise"
+          },
+          "description": {
+            "type": "string",
+            "example": "Riz epice avec poulet braise."
+          },
+          "price": {
+            "type": "number",
+            "example": 2500
+          },
+          "categoryId": {
+            "type": "string",
+            "example": "cat_mains"
+          },
+          "photoUrl": {
+            "type": "string",
+            "example": "https://cdn.fasteat.local/menu/riz.jpg"
+          },
+          "accompaniments": {
+            "example": [
+              "attassi",
+              "aloko"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isAvailable": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "name",
+          "price",
+          "categoryId"
+        ]
+      },
+      "UpdateMenuItemDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Riz au gras + Poulet braise"
+          },
+          "description": {
+            "type": "string",
+            "example": "Riz epice avec poulet braise."
+          },
+          "price": {
+            "type": "number",
+            "example": 2500
+          },
+          "categoryId": {
+            "type": "string",
+            "example": "cat_mains"
+          },
+          "photoUrl": {
+            "type": "string",
+            "example": "https://cdn.fasteat.local/menu/riz.jpg"
+          },
+          "accompaniments": {
+            "example": [
+              "attassi",
+              "aloko"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isAvailable": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "name",
+          "price",
+          "categoryId"
+        ]
+      },
+      "UpdateRestaurantHoursDto": {
+        "type": "object",
+        "properties": {
+          "dayOfWeek": {
+            "type": "number",
+            "example": 1,
+            "minimum": 0,
+            "maximum": 6
+          },
+          "opensAt": {
+            "type": "string",
+            "example": "09:00"
+          },
+          "closesAt": {
+            "type": "string",
+            "example": "22:00"
+          },
+          "isClosed": {
+            "type": "boolean",
+            "example": false
+          }
+        },
+        "required": [
+          "dayOfWeek",
+          "opensAt",
+          "closesAt"
+        ]
+      },
+      "CreatePromotionDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Offre du midi"
+          },
+          "description": {
+            "type": "string",
+            "example": "Reduction sur les plats entre 12h et 14h."
+          },
+          "discountType": {
+            "type": "string",
+            "enum": [
+              "amount",
+              "percentage"
+            ]
+          },
+          "discountValue": {
+            "type": "number",
+            "example": 10
+          },
+          "startsAt": {
+            "type": "string",
+            "example": "2026-05-15T11:00:00.000Z"
+          },
+          "endsAt": {
+            "type": "string",
+            "example": "2026-05-15T14:00:00.000Z"
+          },
+          "code": {
+            "type": "string",
+            "example": "MIDI10"
+          }
+        },
+        "required": [
+          "title",
+          "discountType",
+          "discountValue",
+          "startsAt",
+          "endsAt"
+        ]
+      },
+      "CreateReviewDto": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "example": "ord_1002"
+          },
+          "rating": {
+            "type": "number",
+            "example": 4,
+            "minimum": 1,
+            "maximum": 5
+          },
+          "comment": {
+            "type": "string",
+            "example": "Excellent repas, pret a temps."
+          },
+          "photoUrl": {
+            "type": "string",
+            "example": "https://cdn.fasteat.local/reviews/photo.jpg"
+          }
+        },
+        "required": [
+          "orderId",
+          "rating"
+        ]
+      },
+      "UpdateReviewDto": {
+        "type": "object",
+        "properties": {
+          "rating": {
+            "type": "number",
+            "example": 5,
+            "minimum": 1,
+            "maximum": 5
+          },
+          "comment": {
+            "type": "string",
+            "example": "Service rapide."
+          },
+          "photoUrl": {
+            "type": "string",
+            "example": "https://cdn.fasteat.local/reviews/photo.jpg"
+          }
+        }
+      },
+      "SubscribeRestaurantDto": {
+        "type": "object",
+        "properties": {
+          "planId": {
+            "type": "string",
+            "enum": [
+              "starter",
+              "pro",
+              "premium"
+            ]
+          },
+          "billingCycle": {
+            "type": "string",
+            "enum": [
+              "monthly",
+              "yearly"
+            ]
+          },
+          "paymentMethodId": {
+            "type": "string",
+            "example": "pay_mtn"
+          }
+        },
+        "required": [
+          "planId",
+          "billingCycle"
+        ]
+      },
+      "UploadCompleteDto": {
+        "type": "object",
+        "properties": {
+          "fileName": {
+            "type": "string",
+            "example": "photo.jpg"
+          },
+          "mimeType": {
+            "type": "string",
+            "example": "image/jpeg"
+          },
+          "size": {
+            "type": "number",
+            "example": 240000
+          }
+        },
+        "required": [
+          "fileName",
+          "mimeType",
+          "size"
+        ]
+      },
+      "UpdateProfileDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "example": "Kofi Mensah"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+22990000000"
+          },
+          "email": {
+            "type": "string",
+            "example": "kofi@example.com"
+          }
+        }
+      },
+      "CreatePaymentMethodDto": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "mtn_momo",
+              "moov_money",
+              "celtiis",
+              "card"
+            ]
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+22990000000"
+          },
+          "label": {
+            "type": "string",
+            "example": "Numero personnel MTN"
+          },
+          "isDefault": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "provider"
+        ]
+      }
+    }
+  }
+}

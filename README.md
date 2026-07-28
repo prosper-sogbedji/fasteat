@@ -1,16 +1,41 @@
-# fast_eat
+# FastEat Benin — Application client
 
-A new Flutter project.
+Application Flutter **mobile client** pour commander auprès des restaurants partenaires au Bénin.
 
-## Getting Started
+Le **back-office restaurant** est un projet séparé : `../fasteat_dashboard`.
 
-This project is a starting point for a Flutter application.
+## API
 
-A few resources to get you started if this is your first Flutter project:
+- Base : `https://fast-eat-npb7.onrender.com/api/v1`
+- Configuration : `lib/data/api/api_config.dart`
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Lancer l'app
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+cd fasteat
+flutter pub get
+flutter run
+```
+
+## Architecture
+
+| Dossier | Rôle |
+|---------|------|
+| `lib/data/api/` | Services HTTP (auth, restaurants, panier, commandes, paiements, favoris, notifications) |
+| `lib/providers/` | État global (Provider) |
+| `lib/screens/` | Écrans client uniquement |
+| `lib/data/mock/` | Données de secours hors ligne / démo |
+
+## Parcours principal
+
+1. Onboarding / connexion (JWT)
+2. Accueil → restaurant → détail plat → panier
+3. Paiement Mobile Money (checkout API si connecté)
+4. Suivi & historique des commandes
+5. Favoris restaurants synchronisés (`/favorites`)
+6. Centre de notifications (`/notifications`)
+
+## Projets liés
+
+- **Client (ce repo)** : `fasteat`
+- **Dashboard restaurant** : `fasteat_dashboard`

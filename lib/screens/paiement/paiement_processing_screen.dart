@@ -5,10 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../app_routes.dart';
 import '../../models/commande.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/commandes_provider.dart';
 import '../../providers/flow_provider.dart';
 import '../../providers/panier_provider.dart';
-
+import '../../providers/restaurants_provider.dart';
 import '../../theme/app_theme.dart';
 
 class PaiementProcessingScreen extends StatefulWidget {
@@ -20,6 +21,7 @@ class PaiementProcessingScreen extends StatefulWidget {
 
 class _PaiementProcessingScreenState extends State<PaiementProcessingScreen> {
   bool _processed = false;
+  String? _error;
 
   @override
   void initState() {
@@ -30,11 +32,22 @@ class _PaiementProcessingScreenState extends State<PaiementProcessingScreen> {
   Future<void> _processThenNavigate() async {
     if (_processed) return;
     _processed = true;
+
     final panier = context.read<PanierProvider>();
     final flow = context.read<FlowProvider>();
     final commandes = context.read<CommandesProvider>();
+    final auth = context.read<AuthProvider>();
+    final restos = context.read<RestaurantsProvider>();
 
     final lignes = panier.lignes;
+    if (lignes.isEmpty) {
+      setState(() => _error = 'Votre panier est vide.');
+      return;
+    }
+
+    final first = lignes.first.plat;
+    final resto = restos.restaurantById(first.restoId);
+
     DateTime? heureSouhaitee;
     if (flow.modeCommande == ModeCommande.programmee) {
       final parts = flow.heureRecuperation.split(':');
@@ -47,13 +60,32 @@ class _PaiementProcessingScreenState extends State<PaiementProcessingScreen> {
         }
       }
     }
-    await commandes.placerDepuisPanier(
-      lignes: lignes,
-      mode: flow.modeCommande,
-      fraisLivraison: flow.modeCommande == ModeCommande.livraison ? flow.fraisLivraison : 0,
-      heureRecuperationSouhaitee: heureSouhaitee,
-    );
+
+    var success = false;
+    if (auth.isConnected) {
+      success = await commandes.checkoutDepuisPanier(
+        flow: flow,
+        paiement: flow.paiementMethode,
+        numeroPaiement: flow.numeroPaiement,
+      );
+    }
+
+    if (!success) {
+      await commandes.placerDepuisPanier(
+        lignes: lignes,
+        mode: flow.modeCommande,
+        fraisLivraison: flow.modeCommande == ModeCommande.livraison ? flow.fraisLivraison : 0,
+        restaurantId: resto.id,
+        restaurantNom: resto.nom,
+        heureRecuperationSouhaitee: heureSouhaitee,
+      );
+      if (auth.isConnected && mounted) {
+        setState(() => _error = 'Paiement enregistré en local. Vérifiez votre connexion réseau.');
+      }
+    }
+
     await panier.vider();
+    if (!mounted) return;
 
     Timer(const Duration(seconds: 2), () {
       if (mounted) context.go(AppRoutes.commandeConfirmee);
@@ -65,7 +97,6 @@ class _PaiementProcessingScreenState extends State<PaiementProcessingScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('FASTEAT BENIN'),
-        centerTitle: false,
         actions: [
           IconButton(onPressed: () => context.go(AppRoutes.home), icon: const Icon(Icons.close_rounded)),
         ],
@@ -86,28 +117,28 @@ class _PaiementProcessingScreenState extends State<PaiementProcessingScreen> {
             const SizedBox(height: 36),
             const SizedBox(width: 44, height: 44, child: CircularProgressIndicator(strokeWidth: 3)),
             const SizedBox(height: 18),
-            const Text('Validation Mobile Money en cours...', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21), textAlign: TextAlign.center),
+            const Text(
+              'Validation Mobile Money en cours...',
+              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
+              textAlign: TextAlign.center,
+            ),
+            if (_error != null) ...[
+              const SizedBox(height: 10),
+              Text(_error!, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+            ],
             const SizedBox(height: 10),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(color: const Color(0xFFF3F4F6), borderRadius: BorderRadius.circular(12)),
               child: const Text(
-                'Veuillez valider la transaction sur votre telephone',
+                'Veuillez valider la transaction sur votre téléphone',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: AppColors.textSecondary),
               ),
             ),
             const Spacer(),
             const Icon(Icons.phone_iphone_rounded, size: 84, color: Color(0xFFD1D5DB)),
-            const SizedBox(height: 12),
-            const Text('PAIEMENT SECURISE', style: TextStyle(letterSpacing: 1, fontSize: 11, color: Colors.black45)),
-            const SizedBox(height: 8),
-            const Text(
-              'Ne fermez pas cette fenetre avant la fin de la validation.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.black54),
-            ),
             const SizedBox(height: 24),
           ],
         ),

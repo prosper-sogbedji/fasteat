@@ -27,22 +27,32 @@ class ImageFallback extends StatelessWidget {
       child: SizedBox(
         height: height,
         width: width,
-        child: Image.asset(
-          path,
-          fit: fit,
-          errorBuilder: (context, error, stackTrace) => Container(
-            color: const Color(0xFFFFE6D5),
-            alignment: Alignment.center,
-            padding: const EdgeInsets.all(10),
-            child: Text(
-              label,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppColors.primaryDark,
-                fontWeight: FontWeight.w600,
+        child: path.startsWith('http')
+            ? Image.network(
+                path,
+                fit: fit,
+                errorBuilder: (context, error, stackTrace) => _fallbackView(),
+              )
+            : Image.asset(
+                path,
+                fit: fit,
+                errorBuilder: (context, error, stackTrace) => _fallbackView(),
               ),
-            ),
-          ),
+      ),
+    );
+  }
+
+  Widget _fallbackView() {
+    return Container(
+      color: const Color(0xFFFFE6D5),
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(10),
+      child: Text(
+        label,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: AppColors.primaryDark,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
