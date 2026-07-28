@@ -167,9 +167,9 @@ class _NouvelleReservationScreenState extends State<NouvelleReservationScreen> {
             child: FilledButton(
               onPressed: () {
                 Navigator.pop(c);
-                context.pop();
+                context.pop(true);
               },
-              child: const Text('Voir mes réservations'),
+              child: const Text('OK'),
             ),
           ),
         ],

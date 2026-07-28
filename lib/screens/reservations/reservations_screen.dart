@@ -100,13 +100,6 @@ class _ReservationsScreenState extends State<ReservationsScreen>
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(AppRoutes.nouvelleReservation),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('Réserver', style: TextStyle(fontWeight: FontWeight.w700)),
-      ),
       body: prov.isLoading && prov.reservations.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : TabBarView(
@@ -116,8 +109,8 @@ class _ReservationsScreenState extends State<ReservationsScreen>
                   items: prov.aVenir,
                   emptyTitle: 'Aucune réservation à venir',
                   emptySubtitle: 'Réservez une table dans votre restaurant préféré.',
-                  emptyAction: () => context.push(AppRoutes.nouvelleReservation),
-                  emptyActionLabel: 'Faire une réservation',
+                  emptyAction: null,
+                  emptyActionLabel: null,
                   onCancel: (r) => _onCancel(context, r, prov),
                 ),
                 _ReservationList(

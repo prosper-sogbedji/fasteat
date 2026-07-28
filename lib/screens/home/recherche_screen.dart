@@ -72,7 +72,7 @@ class _RechercheScreenState extends State<RechercheScreen> {
     } else if (_filtre == 'Notes') {
       results = results.where((r) => r.note >= 4.5).toList();
     }
-    if (_selectedLocation != 'Tous') {
+    if (_filtre == 'Localisation' && _selectedLocation != 'Tous') {
       results = results
           .where(
             (r) => r.quartier.toLowerCase().contains(
@@ -81,7 +81,7 @@ class _RechercheScreenState extends State<RechercheScreen> {
           )
           .toList();
     }
-    if (_selectedCuisine != 'Toutes') {
+    if (_filtre == 'Cuisine' && _selectedCuisine != 'Toutes') {
       results = results
           .where(
             (r) => r.cuisine.toLowerCase().contains(

@@ -20,6 +20,7 @@ class PanierLivraisonScreen extends StatefulWidget {
 
 class _PanierLivraisonScreenState extends State<PanierLivraisonScreen> {
   bool _reservationDeclined = false;
+  bool _tableReservee = false;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +29,7 @@ class _PanierLivraisonScreenState extends State<PanierLivraisonScreen> {
 
     final isLivraison = flow.modeConsommation == ModeConsommation.livraison;
     final isSurPlace = flow.modeConsommation == ModeConsommation.surPlace;
-    final showReservationCard = isSurPlace && !_reservationDeclined;
+    final showReservationCard = isSurPlace && !_reservationDeclined && !_tableReservee;
 
     final fraisLivraison = isLivraison ? flow.fraisLivraison : 0;
     final total = panier.sousTotal + fraisLivraison;
@@ -105,7 +106,30 @@ class _PanierLivraisonScreenState extends State<PanierLivraisonScreen> {
           const SizedBox(height: 16),
 
           if (showReservationCard) ...[
-            _buildReservationCard(context, flow),
+            _buildReservationCard(context, flow, restaurant),
+            const SizedBox(height: 16),
+          ],
+          if (_tableReservee) ...[
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE8F5E9),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFFC8E6C9)),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.check_circle_rounded, color: Color(0xFF2E7D32)),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Table réservée avec succès !',
+                      style: TextStyle(color: Color(0xFF1B5E20), fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 16),
           ],
 
@@ -248,7 +272,7 @@ class _PanierLivraisonScreenState extends State<PanierLivraisonScreen> {
     );
   }
 
-  Widget _buildReservationCard(BuildContext context, FlowProvider flow) {
+  Widget _buildReservationCard(BuildContext context, FlowProvider flow, restaurant) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -289,8 +313,20 @@ class _PanierLivraisonScreenState extends State<PanierLivraisonScreen> {
           ),
           const SizedBox(height: 16),
           FilledButton(
-            onPressed: () {
-              context.push(AppRoutes.nouvelleReservation);
+            onPressed: () async {
+              bool? result;
+              if (restaurant != null) {
+                result = await context.push<bool>(
+                  '${AppRoutes.nouvelleReservation}?restaurantId=${restaurant.id}&restaurantNom=${Uri.encodeComponent(restaurant.nom)}&restaurantImage=${Uri.encodeComponent(restaurant.image)}'
+                );
+              } else {
+                result = await context.push<bool>(AppRoutes.nouvelleReservation);
+              }
+              if (result == true && context.mounted) {
+                setState(() {
+                  _tableReservee = true;
+                });
+              }
             },
             style: FilledButton.styleFrom(
               minimumSize: const Size.fromHeight(44),

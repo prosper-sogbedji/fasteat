@@ -10,7 +10,6 @@ import '../../providers/restaurants_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common/formatters.dart';
 import '../../widgets/common/image_fallback.dart';
-import '../../widgets/common/formatters.dart';
 
 /// Écran de confirmation panier en mode QR / Sur place.
 /// Affiche le numéro de table détecté et les articles, puis redirige vers le paiement.

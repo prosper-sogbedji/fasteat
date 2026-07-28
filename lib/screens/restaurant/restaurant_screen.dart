@@ -4,23 +4,35 @@ import 'package:provider/provider.dart';
 
 import '../../data/mock/mock_plats.dart';
 import '../../data/mock/mock_restaurants.dart';
-import '../../models/commande.dart';
 import '../../models/plat.dart';
-import '../../providers/flow_provider.dart';
+import '../../app_routes.dart';
 import '../../providers/panier_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common/badge_certifie.dart';
 import '../../widgets/common/formatters.dart';
 import '../../widgets/common/image_fallback.dart';
 
-class RestaurantScreen extends StatelessWidget {
+class RestaurantScreen extends StatefulWidget {
   const RestaurantScreen({super.key, required this.restaurantId});
 
   final String restaurantId;
 
   @override
+  State<RestaurantScreen> createState() => _RestaurantScreenState();
+}
+
+class _RestaurantScreenState extends State<RestaurantScreen> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final restaurant = mockRestaurants.firstWhere((r) => r.id == restaurantId, orElse: () => mockRestaurants.first);
+    final restaurant = mockRestaurants.firstWhere((r) => r.id == widget.restaurantId, orElse: () => mockRestaurants.first);
     final plats = mockPlats.where((p) => p.restoId == restaurant.id).toList();
     final panier = context.watch<PanierProvider>();
     final total = panier.sousTotal;
@@ -31,6 +43,7 @@ class RestaurantScreen extends StatelessWidget {
     final boissons = plats.where((p) => p.categorie == 'Boissons').toList();
     return Scaffold(
       body: CustomScrollView(
+        controller: _scrollController,
         slivers: [
           SliverAppBar(
             pinned: true,
@@ -89,6 +102,32 @@ class RestaurantScreen extends StatelessWidget {
                       const Icon(Icons.qr_code_rounded, size: 14, color: Colors.black54),
                       const SizedBox(width: 4),
                       const Text('Sur place'),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: FilledButton(
+                          onPressed: () {
+                            _scrollController.animateTo(
+                              300,
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          child: const Text('Commander'),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () {
+                            context.push('${AppRoutes.nouvelleReservation}?restaurantId=${restaurant.id}&restaurantNom=${Uri.encodeComponent(restaurant.nom)}&restaurantImage=${Uri.encodeComponent(restaurant.image)}');
+                          },
+                          child: const Text('Réserver une table', textAlign: TextAlign.center, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 12),

@@ -86,8 +86,6 @@ class _ActiviteScreenState extends State<ActiviteScreen> with SingleTickerProvid
     return AnimatedBuilder(
       animation: _mainTab,
       builder: (context, _) {
-        final isResaTab = _mainTab.index == 1;
-        final hasResa = context.read<ReservationsProvider>().reservations.isNotEmpty;
         return Scaffold(
           backgroundColor: AppColors.background,
           appBar: AppBar(
@@ -107,16 +105,7 @@ class _ActiviteScreenState extends State<ActiviteScreen> with SingleTickerProvid
               ],
             ),
           ),
-          // FAB (+) visible uniquement sur l'onglet Réservations avec des réservations existantes
-          floatingActionButton: (isResaTab && hasResa)
-              ? FloatingActionButton(
-                  onPressed: () => context.push(AppRoutes.nouvelleReservation),
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  elevation: 4,
-                  child: const Icon(Icons.add_rounded, size: 28),
-                )
-              : null,
+          // Plus de FAB pour les réservations ici.
           body: TabBarView(
             controller: _mainTab,
             children: const [
@@ -395,11 +384,9 @@ class _ReservationsViewState extends State<_ReservationsView> {
             items: visible,
             emptyTitle: 'Aucune réservation',
             emptySubtitle: 'Réservez une table dans votre restaurant préféré.',
-            // Bouton "Faire une réservation" uniquement quand la liste est vide
-            emptyAction: prov.reservations.isEmpty
-                ? () => context.push(AppRoutes.nouvelleReservation)
-                : null,
-            emptyActionLabel: prov.reservations.isEmpty ? 'Faire une réservation' : null,
+            // Bouton "Faire une réservation" retiré
+            emptyAction: null,
+            emptyActionLabel: null,
             showCancelButton: tabIndex == 0 || tabIndex == 1 || tabIndex == 2,
             onCancel: (r) => _onCancel(context, r, prov),
           ),
