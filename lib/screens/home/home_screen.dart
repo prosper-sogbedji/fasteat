@@ -24,6 +24,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  /// Catégorie active pour les filtres de la section "À découvrir".
+  String _categorieActive = 'Tous';
+
+  static const _categories = ['Tous', 'Populaires', 'Mieux notés', 'Livraison', 'Nouveautés'];
+
   @override
   void initState() {
     super.initState();
@@ -46,9 +51,30 @@ class _HomeScreenState extends State<HomeScreen> {
         ? fav.favoriteRestaurants
         : catalog.restaurants.where((r) => fav.isFavorite(r.id)).toList();
 
-    final aDecouvrir = catalog.restaurants
+    // Base : restaurants non-favoris
+    var aDecouvrir = catalog.restaurants
         .where((r) => !fav.isFavorite(r.id))
         .toList();
+
+    // Application du filtre actif
+    switch (_categorieActive) {
+      case 'Populaires':
+        aDecouvrir.sort((a, b) => b.note.compareTo(a.note));
+        break;
+      case 'Mieux notés':
+        aDecouvrir = aDecouvrir.where((r) => r.note >= 4.5).toList()
+          ..sort((a, b) => b.note.compareTo(a.note));
+        break;
+      case 'Livraison':
+        aDecouvrir = aDecouvrir.where((r) => r.livraison).toList();
+        break;
+      case 'Nouveautés':
+        // TODO: remplacer par un tri sur createdAt dès que ce champ sera disponible côté API
+        aDecouvrir = aDecouvrir.reversed.toList();
+        break;
+      default: // 'Tous'
+        break;
+    }
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -262,23 +288,24 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             
-            // ---- Filtres (Chips) ----
+            // ---- Filtres (Chips) fonctionnels ----
             SliverToBoxAdapter(
               child: SizedBox(
                 height: 40,
-                child: ListView(
+                child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
                   physics: const BouncingScrollPhysics(),
-                  children: [
-                    _FilterChip(label: 'Populaires', isSelected: true),
-                    const SizedBox(width: 8),
-                    _FilterChip(label: 'Près de moi', isSelected: false),
-                    const SizedBox(width: 8),
-                    _FilterChip(label: 'Mieux notés', isSelected: false),
-                    const SizedBox(width: 8),
-                    _FilterChip(label: 'Nouveautés', isSelected: false),
-                  ],
+                  separatorBuilder: (_, _) => const SizedBox(width: 8),
+                  itemCount: _categories.length,
+                  itemBuilder: (_, i) {
+                    final cat = _categories[i];
+                    return _FilterChip(
+                      label: cat,
+                      isSelected: _categorieActive == cat,
+                      onTap: () => setState(() => _categorieActive = cat),
+                    );
+                  },
                 ),
               ),
             ),
@@ -620,25 +647,37 @@ class _ADecouvrirCard extends StatelessWidget {
 
 // ---- Widget : Pilule de Filtre (Chip) ----
 class _FilterChip extends StatelessWidget {
-  const _FilterChip({required this.label, required this.isSelected});
+  const _FilterChip({
+    required this.label,
+    required this.isSelected,
+    this.onTap,
+  });
   final String label;
   final bool isSelected;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: isSelected ? AppColors.primary : const Color(0xFFF5F5F5),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        label,
-        style: TextStyle(
-          color: isSelected ? Colors.white : AppColors.textSecondary,
-          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-          fontSize: 13,
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary : const Color(0xFFF5F5F5),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: isSelected
+              ? [BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 6, offset: const Offset(0, 2))]
+              : [],
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : AppColors.textSecondary,
+            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+            fontSize: 13,
+          ),
         ),
       ),
     );

@@ -20,7 +20,10 @@ class ChoixPaiementScreen extends StatefulWidget {
 }
 
 class _ChoixPaiementScreenState extends State<ChoixPaiementScreen> {
-  static const bool _demoMode = bool.fromEnvironment('FASTEAT_DEMO', defaultValue: false);
+  static const bool _demoMode = bool.fromEnvironment(
+    'FASTEAT_DEMO',
+    defaultValue: false,
+  );
 
   bool _isProcessing = false;
   late final TextEditingController _phoneCtrl;
@@ -41,7 +44,10 @@ class _ChoixPaiementScreenState extends State<ChoixPaiementScreen> {
   Future<void> _confirmerPaiement() async {
     final phone = _normalizePhone(_phoneCtrl.text);
     if (phone.length < 8) {
-      AppFeedback.info(context, 'Veuillez saisir un numero de telephone valide.');
+      AppFeedback.info(
+        context,
+        'Veuillez saisir un numéro de téléphone valide.',
+      );
       return;
     }
 
@@ -56,7 +62,9 @@ class _ChoixPaiementScreenState extends State<ChoixPaiementScreen> {
       return;
     }
 
-    final frais = flow.modeConsommation == ModeConsommation.livraison ? flow.fraisLivraison : 0;
+    final frais = flow.modeConsommation == ModeConsommation.livraison
+        ? flow.fraisLivraison
+        : 0;
     final resto = restos.restaurantById(lignes.first.plat.restoId);
 
     setState(() => _isProcessing = true);
@@ -66,7 +74,8 @@ class _ChoixPaiementScreenState extends State<ChoixPaiementScreen> {
     if (!_demoMode) {
       synced = await commandes.checkoutDepuisPanier(
         flow: flow,
-        paiement: flow.paiementMethode,
+        paiement:
+            flow.paiementMethode, // La détection auto se fera côté backend
         numeroPaiement: phone,
       );
     }
@@ -77,7 +86,7 @@ class _ChoixPaiementScreenState extends State<ChoixPaiementScreen> {
       setState(() => _isProcessing = false);
       AppFeedback.error(
         context,
-        'Paiement non confirme. Le panier est conserve, veuillez reessayer.',
+        'Paiement non confirmé. Le panier est conservé, veuillez réessayer.',
       );
       return;
     }
@@ -107,87 +116,168 @@ class _ChoixPaiementScreenState extends State<ChoixPaiementScreen> {
   Widget build(BuildContext context) {
     final flow = context.watch<FlowProvider>();
     final panier = context.watch<PanierProvider>();
-    final frais = flow.modeConsommation == ModeConsommation.livraison ? flow.fraisLivraison : 0;
+    final frais = flow.modeConsommation == ModeConsommation.livraison
+        ? flow.fraisLivraison
+        : 0;
     final total = panier.sousTotal + frais;
     final keyboard = MediaQuery.of(context).viewInsets.bottom;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Paiement'), centerTitle: true),
+      backgroundColor: const Color(0xFFF8F8F8),
+      appBar: AppBar(
+        title: const Text(
+          'Paiement',
+          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        shadowColor: Colors.black12,
+        surfaceTintColor: Colors.transparent,
+      ),
       body: Column(
         children: [
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              padding: const EdgeInsets.all(16),
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _RecapitulatifPaiement(panier: panier, frais: frais, total: total),
-                  const SizedBox(height: 20),
-                  const Text('Operateur Mobile Money', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      _OperatorChoice(
-                        label: 'MTN',
-                        subtitle: 'Mobile Money',
-                        color: AppColors.mtnMoMo,
-                        selected: flow.paiementMethode == PaiementMethode.mtn,
-                        onTap: () => context.read<FlowProvider>().setPaiement(PaiementMethode.mtn),
-                      ),
-                      const SizedBox(width: 10),
-                      _OperatorChoice(
-                        label: 'MOOV',
-                        subtitle: 'Money',
-                        color: AppColors.moovMoney,
-                        selected: flow.paiementMethode == PaiementMethode.moov,
-                        onTap: () => context.read<FlowProvider>().setPaiement(PaiementMethode.moov),
-                      ),
-                    ],
+                  _RecapitulatifPaiement(
+                    panier: panier,
+                    frais: frais,
+                    total: total,
                   ),
-                  const SizedBox(height: 20),
-                  const Text('Numero a debiter', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 24),
+
+                  // Titre de section propre
                   const Text(
-                    'Saisissez le numero correspondant a l\'operateur selectionne.',
-                    style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-                  ),
-                  const SizedBox(height: 10),
-                  TextField(
-                    controller: _phoneCtrl,
-                    keyboardType: TextInputType.phone,
-                    decoration: InputDecoration(
-                      hintText: 'Ex. 22961000000',
-                      prefixIcon: const Icon(Icons.phone_android_rounded),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
-                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
+                    'Numéro de facturation',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16,
+                      color: Colors.black87,
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  _SecurityNotice(demoMode: _demoMode),
-                  SizedBox(height: keyboard > 0 ? keyboard : 8),
+                  const SizedBox(height: 6),
+                  const Text(
+                    ' ',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Champ numéro premium
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.04),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: TextField(
+                      controller: _phoneCtrl,
+                      keyboardType: TextInputType.phone,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'Ex: 22961000000',
+                        hintStyle: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade400,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.phone_android_rounded,
+                          color: AppColors.primary,
+                          size: 20,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 16,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: const BorderSide(
+                            color: AppColors.primary,
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Si mode démo actif, on affiche uniquement le notice de démo
+                  if (_demoMode) ...[
+                    const SizedBox(height: 24),
+                    _SecurityNotice(demoMode: true),
+                  ],
+
+                  SizedBox(height: keyboard > 0 ? keyboard : 24),
                 ],
               ),
             ),
           ),
+
+          // Bouton payer en bas de l'écran
           SafeArea(
             top: false,
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(16, 8, 16, keyboard > 0 ? 8 : 16),
+            child: Container(
+              padding: EdgeInsets.fromLTRB(16, 12, 16, keyboard > 0 ? 12 : 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
+              ),
               child: SizedBox(
+                height: 52,
                 width: double.infinity,
                 child: FilledButton(
                   style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(54),
                     backgroundColor: AppColors.primary,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    disabledBackgroundColor: AppColors.primary.withValues(
+                      alpha: 0.5,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    elevation: 0,
                   ),
                   onPressed: _isProcessing ? null : _confirmerPaiement,
                   child: _isProcessing
-                      ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
+                        )
                       : Text(
-                          'Confirmer et payer - ${fcfa(total)}',
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                          'Confirmer et payer — ${fcfa(total)}',
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
                 ),
               ),
@@ -212,106 +302,127 @@ class _RecapitulatifPaiement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Recapitulatif', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
-            const SizedBox(height: 8),
-            ...panier.lignes.map(
-              (l) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 3),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(child: Text('${l.quantite} x ${l.plat.nom}', style: const TextStyle(fontSize: 13))),
-                    Text(fcfa(l.total), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-                  ],
-                ),
-              ),
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Récapitulatif',
+            style: TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 15,
+              color: Colors.black87,
             ),
-            if (frais > 0) ...[
-              const Divider(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ),
+          const SizedBox(height: 12),
+          ...panier.lignes.map(
+            (l) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
                 children: [
-                  const Text('Frais de livraison', style: TextStyle(fontSize: 13)),
-                  Text(fcfa(frais), style: const TextStyle(fontSize: 13)),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      '${l.quantite}x',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      l.plat.nom,
+                      style: const TextStyle(
+                        fontSize: 13.5,
+                        color: Colors.black87,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    fcfa(l.total),
+                    style: const TextStyle(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ],
               ),
-            ],
-            const Divider(height: 16),
+            ),
+          ),
+          if (frais > 0) ...[
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 10),
+              child: Divider(height: 1, color: Color(0xFFEEEEEE)),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('TOTAL A PAYER', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
-                Text(fcfa(total), style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.primary, fontSize: 20)),
+                const Text(
+                  'Frais de livraison',
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                Text(
+                  fcfa(frais),
+                  style: const TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _OperatorChoice extends StatelessWidget {
-  const _OperatorChoice({
-    required this.label,
-    required this.subtitle,
-    required this.color,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String label;
-  final String subtitle;
-  final Color color;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: selected ? color.withValues(alpha: 0.16) : Colors.white,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: selected ? color : AppColors.border, width: selected ? 1.6 : 1),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Divider(height: 1, color: Color(0xFFEEEEEE)),
           ),
-          child: Row(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                width: 34,
-                height: 34,
-                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-                child: const Icon(Icons.phone_android_rounded, color: Colors.white, size: 18),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(label, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
-                    Text(subtitle, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
-                  ],
+              const Text(
+                'Total à payer',
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 15,
+                  color: Colors.black87,
                 ),
               ),
-              Icon(
-                selected ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
-                color: selected ? color : AppColors.textSecondary,
-                size: 20,
+              Text(
+                fcfa(total),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.primary,
+                  fontSize: 18,
+                ),
               ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }
@@ -324,24 +435,26 @@ class _SecurityNotice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = demoMode ? const Color(0xFFF59E0B) : const Color(0xFF16A34A);
+    if (!demoMode) return const SizedBox.shrink();
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
+        color: const Color(0xFFFEF3C7),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.35)),
+        border: Border.all(color: const Color(0xFFFCD34D)),
       ),
-      child: Row(
+      child: const Row(
         children: [
-          Icon(demoMode ? Icons.info_outline_rounded : Icons.lock_rounded, color: color, size: 18),
-          const SizedBox(width: 8),
+          Icon(Icons.info_outline_rounded, color: Color(0xFFD97706), size: 18),
+          SizedBox(width: 10),
           Expanded(
             child: Text(
-              demoMode
-                  ? 'Mode DEMO actif : aucune transaction reelle ne sera debitee.'
-                  : 'Paiement securise via le backend FastEat. Validez la transaction sur votre telephone.',
-              style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w600),
+              'Mode DEMO actif : aucune transaction ne sera débitée.',
+              style: TextStyle(
+                fontSize: 12,
+                color: Color(0xFFD97706),
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
