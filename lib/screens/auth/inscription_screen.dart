@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../app_routes.dart';
+import '../../core/session_sync.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/commandes_provider.dart';
+import '../../providers/favorites_provider.dart';
+import '../../providers/notifications_provider.dart';
+import '../../providers/panier_provider.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/common/app_feedback.dart';
+
+import '../../widgets/common/country_picker.dart';
 
 class InscriptionScreen extends StatefulWidget {
   const InscriptionScreen({super.key});
@@ -14,116 +23,208 @@ class InscriptionScreen extends StatefulWidget {
 }
 
 class _InscriptionScreenState extends State<InscriptionScreen> {
-  /// 0: identité + téléphone, 1: OTP WhatsApp, 2: mot de passe
+  /// 0: identité + téléphone, 1: vérification OTP WhatsApp/SMS
   int step = 0;
-  bool hidePassword = true;
-  bool hidePasswordConfirm = true;
   final nomCompletCtrl = TextEditingController();
   final phoneLocalCtrl = TextEditingController();
-  final passCtrl = TextEditingController();
-  final passConfirmCtrl = TextEditingController();
   final List<TextEditingController> _otpCtrls = List.generate(6, (_) => TextEditingController());
   final List<FocusNode> _otpNodes = List.generate(6, (_) => FocusNode());
 
-  static const _indicatif = '+229';
+  Country _selectedCountry = kDefaultCountry;
+  bool _loadingDialogOpen = false;
 
   @override
   void dispose() {
     nomCompletCtrl.dispose();
     phoneLocalCtrl.dispose();
-    passCtrl.dispose();
-    passConfirmCtrl.dispose();
-    for (final c in _otpCtrls) {
-      c.dispose();
-    }
-    for (final n in _otpNodes) {
-      n.dispose();
-    }
+    for (final c in _otpCtrls) { c.dispose(); }
+    for (final n in _otpNodes) { n.dispose(); }
     super.dispose();
   }
 
   String get _fullPhone {
     final d = phoneLocalCtrl.text.replaceAll(RegExp(r'\s'), '');
-    return '$_indicatif $d';
+    return '${_selectedCountry.dialCode} $d';
   }
 
   @override
   Widget build(BuildContext context) {
+    final bottom = MediaQuery.of(context).viewInsets.bottom;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFB),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 28, 16, 16),
+      backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: true,
+      body: Column(
         children: [
-          const Text(
-            'Bienvenus!',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 36, fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(height: 14),
-          Container(
-            height: 42,
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF1F3F6),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border),
+          // ---- Zone supérieure orange ----
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeInOut,
+            height: step == 0 ? 300 : 210,
+            padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 10, left: 24, right: 24, bottom: 20),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [AppColors.primary, AppColors.primaryDark],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(32)),
             ),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: InkWell(
-                    onTap: () => context.go(AppRoutes.connexion),
-                    child: const Center(
-                      child: Text('Connexion', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
+                // Barre haut
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        if (step == 1) {
+                          setState(() => step = 0);
+                        } else {
+                          context.go(AppRoutes.onboarding);
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(12)),
+                        child: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 20),
+                      ),
                     ),
-                  ),
+                    const Spacer(),
+                    // Indicateur d'étape
+                    Row(
+                      children: List.generate(2, (index) => AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        height: 8,
+                        width: step == index ? 24 : 8,
+                        decoration: BoxDecoration(
+                          color: step == index ? Colors.white : Colors.white.withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      )),
+                    ),
+                  ],
                 ),
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Center(
-                      child: Text('Inscription', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12)),
-                    ),
+                const Spacer(),
+                if (step == 0) ...[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Bienvenue 🎉', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w900)),
+                            const SizedBox(height: 8),
+                            Text('Créez votre compte\nen 2 minutes.', style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 15, height: 1.4)),
+                          ],
+                        ),
+                      ),
+                      const _ChefIllustration(),
+                    ],
                   ),
-                ),
+                ] else ...[
+                  const Text('Vérification 🛡️', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w900)),
+                  const SizedBox(height: 8),
+                  Text('Saisissez le code reçu.', style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 15, height: 1.4)),
+                ],
               ],
             ),
           ),
-          const SizedBox(height: 16),
-          if (step == 0) ..._stepIdentite(),
-          if (step == 1) ..._stepOtpWhatsapp(),
-          if (step == 2) ..._stepPassword(),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _dot(0),
-              const SizedBox(width: 8),
-              _dot(1),
-              const SizedBox(width: 8),
-              _dot(2),
-            ],
-          ),
-          const SizedBox(height: 18),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: step == 0 ? () => context.go(AppRoutes.connexion) : () => setState(() => step--),
-                  child: Text(step == 0 ? 'Annuler' : 'Retour'),
-                ),
+
+          // ---- Contenu (Formulaire) ----
+          Expanded(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(24, 32, 24, bottom > 0 ? bottom + 16 : 24),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (step == 0) ..._stepIdentite(),
+                  if (step == 1) ..._stepOtpWhatsapp(),
+
+                  const SizedBox(height: 24),
+
+                  // Bouton principal
+                  SizedBox(
+                    height: 56,
+                    child: FilledButton(
+                      style: FilledButton.styleFrom(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        elevation: 4,
+                        shadowColor: AppColors.primary.withValues(alpha: 0.35),
+                      ),
+                      onPressed: _onPrimary,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(step == 0 ? 'Suivant' : "Valider le code",
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                          const SizedBox(width: 8),
+                          Icon(step == 0 ? Icons.arrow_forward_rounded : Icons.check_rounded, size: 18),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+                  
+                  // Bouton Mode Démo
+                  if (step == 0)
+                    SizedBox(
+                      height: 56,
+                      child: OutlinedButton(
+                        onPressed: () async {
+                          await context.read<AuthProvider>().loginDemo();
+                          if (!context.mounted) return;
+                          context.go(AppRoutes.home);
+                        },
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: AppColors.primary, width: 2),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.rocket_launch_rounded, size: 18, color: AppColors.primary),
+                            SizedBox(width: 10),
+                            Text(
+                              'Mode Démo',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.primary),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                  if (step == 0) ...[
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text('Déjà un compte ? ', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                        GestureDetector(
+                          onTap: () => context.go(AppRoutes.connexion),
+                          child: const Text('Se connecter', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w800, fontSize: 13)),
+                        ),
+                      ],
+                    ),
+                  ],
+
+                  if (step == 1) ...[
+                    const SizedBox(height: 12),
+                    Center(
+                      child: TextButton.icon(
+                        onPressed: () => _showInfo('Un nouveau code vous sera envoyé sur WhatsApp.'),
+                        icon: const Icon(Icons.refresh_rounded, size: 16),
+                        label: const Text('Renvoyer le code'),
+                      ),
+                    ),
+                  ],
+                ],
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: FilledButton(
-                  onPressed: _onPrimary,
-                  child: Text(step == 0 ? 'Suivant' : step == 1 ? 'Verifier' : "S'inscrire"),
-                ),
-              ),
-            ],
+            ),
           ),
         ],
       ),
@@ -132,179 +233,156 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
 
   List<Widget> _stepIdentite() {
     return [
-      _LabelField(label: 'Nom complet', hint: 'Nom et prénom', controller: nomCompletCtrl),
-      const SizedBox(height: 14),
-      const Align(
-        alignment: Alignment.centerLeft,
-        child: Text('Numéro de téléphone', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+      // Champ nom
+      _buildLabel('Nom complet'),
+      const SizedBox(height: 8),
+      TextField(
+        controller: nomCompletCtrl,
+        textCapitalization: TextCapitalization.words,
+        decoration: const InputDecoration(
+          hintText: 'Votre nom et prénom',
+          prefixIcon: Icon(Icons.person_outline_rounded, size: 20),
+        ),
       ),
-      const SizedBox(height: 6),
+      const SizedBox(height: 20),
+
+      // Champ téléphone
+      _buildLabel('Numéro de téléphone'),
+      const SizedBox(height: 8),
       Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF3F4F6),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border),
-            ),
-            child: const Text(_indicatif, style: TextStyle(fontWeight: FontWeight.w700)),
+          CountryPickerButton(
+            country: _selectedCountry,
+            onChanged: (c) => setState(() {
+              _selectedCountry = c;
+              phoneLocalCtrl.clear();
+            }),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 10),
           Expanded(
             child: TextField(
               controller: phoneLocalCtrl,
               keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                hintText: '90 00 00 00',
-                hintStyle: TextStyle(color: Color(0xFF98A2B3), fontSize: 13),
+              decoration: InputDecoration(
+                hintText: _selectedCountry.hint,
               ),
             ),
           ),
         ],
       ),
       const SizedBox(height: 8),
-      const Text(
-        'L’indicatif +229 est pré-rempli. Saisissez votre numéro sans le répéter.',
-        style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: AppColors.primary.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.info_outline_rounded, size: 14, color: AppColors.primary),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                '${_selectedCountry.flag}  ${_selectedCountry.name}  •  ${_selectedCountry.dialCode}  •  ${_selectedCountry.minDigits} chiffres',
+                style: const TextStyle(fontSize: 11, color: AppColors.primary, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        ),
       ),
     ];
   }
 
   List<Widget> _stepOtpWhatsapp() {
     return [
-      const SizedBox(height: 8),
-      CircleAvatar(
-        radius: 28,
-        backgroundColor: const Color(0xFF25D366).withValues(alpha: 0.15),
-        child: const Icon(Icons.chat_rounded, color: Color(0xFF25D366), size: 30),
+      Center(
+        child: Container(
+          width: 64, height: 64,
+          decoration: BoxDecoration(
+            color: const Color(0xFF25D366).withValues(alpha: 0.12),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(Icons.chat_rounded, color: Color(0xFF25D366), size: 32),
+        ),
       ),
-      const SizedBox(height: 12),
-      const Text(
-        'Vérification WhatsApp',
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
-      ),
-      const SizedBox(height: 8),
+      const SizedBox(height: 16),
       Text(
-        'Un code à 6 chiffres a été envoyé sur WhatsApp au numéro\n$_fullPhone',
+        'Code envoyé sur WhatsApp au\n$_fullPhone',
         textAlign: TextAlign.center,
-        style: const TextStyle(color: AppColors.textSecondary, height: 1.35),
+        style: const TextStyle(color: AppColors.textSecondary, height: 1.5, fontSize: 14),
       ),
-      const SizedBox(height: 18),
+      const SizedBox(height: 24),
       Row(
-        children: List.generate(
-          6,
-          (i) => Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 3),
-              child: TextField(
-                controller: _otpCtrls[i],
-                focusNode: _otpNodes[i],
-                textAlign: TextAlign.center,
-                maxLength: 1,
-                keyboardType: TextInputType.number,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                onChanged: (v) {
-                  if (v.isNotEmpty && i < 5) {
-                    _otpNodes[i + 1].requestFocus();
-                  }
-                },
-                decoration: const InputDecoration(
-                  counterText: '',
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: EdgeInsets.symmetric(vertical: 12),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    borderSide: BorderSide(color: AppColors.border),
-                  ),
+        children: List.generate(6, (i) => Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 3),
+            child: TextField(
+              controller: _otpCtrls[i],
+              focusNode: _otpNodes[i],
+              textAlign: TextAlign.center,
+              maxLength: 1,
+              keyboardType: TextInputType.number,
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+              onChanged: (v) {
+                if (v.isNotEmpty && i < 5) _otpNodes[i + 1].requestFocus();
+                if (v.isEmpty && i > 0) _otpNodes[i - 1].requestFocus();
+              },
+              decoration: InputDecoration(
+                counterText: '',
+                filled: true,
+                fillColor: const Color(0xFFF8F9FA),
+                contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(12)),
+                  borderSide: BorderSide(color: AppColors.border),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(12)),
+                  borderSide: BorderSide(color: AppColors.primary, width: 1.5),
                 ),
               ),
             ),
           ),
-        ),
-      ),
-      const SizedBox(height: 12),
-      TextButton(
-        onPressed: () => _showInfo('Renvoi simulé : un nouveau code serait envoyé sur WhatsApp.'),
-        child: const Text('Renvoyer le code sur WhatsApp'),
+        )),
       ),
     ];
   }
 
-  List<Widget> _stepPassword() {
-    return [
-      const Text(
-        'Choisissez votre mot de passe',
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-      ),
-      const SizedBox(height: 8),
-      const Text(
-        'Sécurisez votre compte avec un mot de passe fort.',
-        style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
-      ),
-      const SizedBox(height: 16),
-      _LabelField(
-        label: 'Mot de passe',
-        hint: 'Au moins 8 caractères',
-        controller: passCtrl,
-        obscureText: hidePassword,
-        suffix: IconButton(
-          onPressed: () => setState(() => hidePassword = !hidePassword),
-          icon: Icon(hidePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 18),
-        ),
-      ),
-      const SizedBox(height: 10),
-      _LabelField(
-        label: 'Confirmer le mot de passe',
-        hint: 'Répétez le mot de passe',
-        controller: passConfirmCtrl,
-        obscureText: hidePasswordConfirm,
-        suffix: IconButton(
-          onPressed: () => setState(() => hidePasswordConfirm = !hidePasswordConfirm),
-          icon: Icon(hidePasswordConfirm ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 18),
-        ),
-      ),
-    ];
+  Widget _buildLabel(String text) {
+    return Text(text, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textPrimary));
   }
 
-  Widget _dot(int i) {
-    final active = i == step;
-    return Container(
-      width: active ? 24 : 14,
-      height: 4,
-      decoration: BoxDecoration(
-        color: active ? const Color(0xFF246BFD) : const Color(0xFFE4E7EC),
-        borderRadius: BorderRadius.circular(8),
-      ),
-    );
-  }
+  void _onPrimary() async {
+    HapticFeedback.mediumImpact();
+    final auth = context.read<AuthProvider>();
 
-  void _onPrimary() {
     if (step == 0) {
       final nom = nomCompletCtrl.text.trim();
       final digits = phoneLocalCtrl.text.replaceAll(RegExp(r'\s'), '');
-      final isPhone = RegExp(r'^[0-9]{8,10}$').hasMatch(digits);
-      if (nom.length < 3) {
-        _showError('Veuillez saisir votre nom complet.');
+      final len = digits.length;
+
+      if (nom.length < 3) { _showError('Veuillez saisir votre nom complet (au moins 3 caractères).'); return; }
+      if (len < _selectedCountry.minDigits || len > _selectedCountry.maxDigits) {
+        _showError(
+          'Numéro invalide pour ${_selectedCountry.name}.\n'
+          '${_selectedCountry.minDigits == _selectedCountry.maxDigits ? "Entrez exactement ${_selectedCountry.minDigits} chiffres" : "Entrez ${_selectedCountry.minDigits}–${_selectedCountry.maxDigits} chiffres"} '
+          '(ex: ${_selectedCountry.hint}).',
+        );
         return;
       }
-      if (!isPhone) {
-        _showError('Numéro invalide : 8 à 10 chiffres après +229.');
-        return;
+
+      _showLoadingDialog('Envoi du code en cours...');
+      final ok = await auth.register(nom, _fullPhone);
+      if (!mounted) return;
+      _hideLoadingDialog();
+
+      if (ok) {
+        setState(() => step = 1);
+        WidgetsBinding.instance.addPostFrameCallback((_) => _otpNodes.first.requestFocus());
+      } else {
+        _showError('Impossible de s\'inscrire. Vérifiez votre connexion ou ce numéro est déjà utilisé.');
       }
-      setState(() => step = 1);
-      // send OTP via WhatsApp (mock)
-      final phone = _fullPhone;
-      WidgetsBinding.instance.addPostFrameCallback((_) => _otpNodes.first.requestFocus());
-      Future.microtask(() async {
-        final ok = await context.read<AuthProvider>().sendOtpWhatsapp(phone);
-        if (!ok) {
-          _showError('Impossible d\'envoyer le code sur WhatsApp.');
-        }
-      });
       return;
     }
 
@@ -314,65 +392,91 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
         _showError('Saisissez le code à 6 chiffres reçu sur WhatsApp.');
         return;
       }
-      setState(() => step = 2);
-      return;
-    }
 
-    final pass = passCtrl.text;
-    final confirm = passConfirmCtrl.text;
-    if (pass.length < 8) {
-      _showError('Le mot de passe doit contenir au moins 8 caracteres.');
-      return;
+      _showLoadingDialog('Vérification en cours...');
+      final ok = await auth.verifyOtp(_fullPhone, code);
+      if (!mounted) return;
+      _hideLoadingDialog();
+
+      if (ok) {
+        await syncClientSession(
+          auth: auth,
+          panier: context.read<PanierProvider>(),
+          commandes: context.read<CommandesProvider>(),
+          favorites: context.read<FavoritesProvider>(),
+          notifications: context.read<NotificationsProvider>(),
+        );
+        if (!mounted) return;
+        context.go(AppRoutes.home);
+      } else {
+        _showError('Code incorrect ou expiré. Réessayez.');
+      }
     }
-    if (pass != confirm) {
-      _showError('Les mots de passe ne correspondent pas.');
-      return;
-    }
-    context.read<AuthProvider>().loginMock();
-    context.go(AppRoutes.home);
   }
 
   void _showError(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        icon: const Icon(Icons.warning_amber_rounded, color: AppColors.primary, size: 40),
+        title: const Text('Attention', style: TextStyle(fontWeight: FontWeight.w800)),
+        content: Text(msg, textAlign: TextAlign.center),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            style: FilledButton.styleFrom(minimumSize: const Size(120, 44), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showLoadingDialog(String msg) {
+    if (_loadingDialogOpen) return;
+    _loadingDialogOpen = true;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => PopScope(
+        canPop: false,
+        child: AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          content: Row(
+            children: [
+              CircularProgressIndicator(color: AppColors.primary, strokeWidth: 3),
+              const SizedBox(width: 20),
+              Expanded(child: Text(msg, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600))),
+            ],
+          ),
+        ),
+      ),
+    ).then((_) => _loadingDialogOpen = false);
+  }
+
+  void _hideLoadingDialog() {
+    if (!_loadingDialogOpen) return;
+    Navigator.of(context, rootNavigator: true).pop();
+    _loadingDialogOpen = false;
   }
 
   void _showInfo(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+    AppFeedback.info(context, msg);
   }
 }
 
-class _LabelField extends StatelessWidget {
-  const _LabelField({
-    required this.label,
-    required this.hint,
-    required this.controller,
-    this.obscureText = false,
-    this.suffix,
-  });
-
-  final String label;
-  final String hint;
-  final TextEditingController? controller;
-  final bool obscureText;
-  final Widget? suffix;
+/// Illustration cuisinier (image fournie par le user) — affichée dans la zone orange
+class _ChefIllustration extends StatelessWidget {
+  const _ChefIllustration();
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-        const SizedBox(height: 6),
-        TextField(
-          controller: controller,
-          obscureText: obscureText,
-          decoration: InputDecoration(
-            hintText: hint,
-            suffixIcon: suffix,
-            hintStyle: const TextStyle(color: Color(0xFF98A2B3), fontSize: 13),
-          ),
-        ),
-      ],
+    return Image.asset(
+      'assets/images/chef_illustration.png',
+      height: 110,
+      fit: BoxFit.contain,
     );
   }
 }

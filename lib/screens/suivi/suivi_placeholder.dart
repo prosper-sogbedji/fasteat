@@ -6,7 +6,6 @@ import '../../app_routes.dart';
 import '../../models/commande.dart';
 import '../../providers/commandes_provider.dart';
 import '../../theme/app_theme.dart';
-import '../../widgets/common/bottom_nav_bar.dart';
 
 class SuiviPlaceholderScreen extends StatelessWidget {
   const SuiviPlaceholderScreen({super.key});
@@ -19,14 +18,6 @@ class SuiviPlaceholderScreen extends StatelessWidget {
       return Scaffold(
         appBar: AppBar(title: const Text('Suivi commande')),
         body: const Center(child: Text('Aucune commande active pour le moment.')),
-        bottomNavigationBar: FastEatBottomNavBar(
-          currentIndex: 2,
-          onTap: (i) {
-            if (i == 0) context.go(AppRoutes.home);
-            if (i == 1) context.go(AppRoutes.favoris);
-            if (i == 3) context.go(AppRoutes.profil);
-          },
-        ),
       );
     }
 
@@ -57,9 +48,9 @@ class SuiviPlaceholderScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Saveurs du Bénin', style: TextStyle(fontWeight: FontWeight.w800)),
+                            Text(active.restaurantNom, style: const TextStyle(fontWeight: FontWeight.w800)),
                             Text(
-                              '${active.id} • ${active.restaurantNom}',
+                              active.id,
                               style: const TextStyle(fontSize: 12, color: Colors.black54),
                             ),
                           ],
@@ -154,14 +145,6 @@ class SuiviPlaceholderScreen extends StatelessWidget {
               ),
             ),
         ],
-      ),
-      bottomNavigationBar: FastEatBottomNavBar(
-        currentIndex: 2,
-        onTap: (i) {
-          if (i == 0) context.go(AppRoutes.home);
-          if (i == 1) context.go(AppRoutes.favoris);
-          if (i == 3) context.go(AppRoutes.profil);
-        },
       ),
     );
   }

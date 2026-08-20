@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 
 import '../../app_routes.dart';
 import '../../providers/commandes_provider.dart';
-import '../../widgets/common/bottom_nav_bar.dart';
 import '../../models/commande.dart';
 import '../../theme/app_theme.dart';
 
@@ -17,6 +16,14 @@ class HistoriquePlaceholderScreen extends StatefulWidget {
 
 class _HistoriquePlaceholderScreenState extends State<HistoriquePlaceholderScreen> {
   int tabIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<CommandesProvider>().refreshFromApi();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,14 +64,6 @@ class _HistoriquePlaceholderScreenState extends State<HistoriquePlaceholderScree
                   ),
           ),
         ],
-      ),
-      bottomNavigationBar: FastEatBottomNavBar(
-        currentIndex: 2,
-        onTap: (i) {
-          if (i == 0) context.go(AppRoutes.home);
-          if (i == 1) context.go(AppRoutes.favoris);
-          if (i == 3) context.go(AppRoutes.profil);
-        },
       ),
     );
   }

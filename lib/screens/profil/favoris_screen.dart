@@ -3,69 +3,90 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../app_routes.dart';
-import '../../data/mock/mock_restaurants.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/favorites_provider.dart';
-import '../../widgets/common/bottom_nav_bar.dart';
+import '../../models/restaurant.dart';
+import '../../providers/restaurants_provider.dart';
+import '../../widgets/common/offline_banner.dart';
 import '../../widgets/common/restaurant_card.dart';
 
-class FavorisScreen extends StatelessWidget {
+class FavorisScreen extends StatefulWidget {
   const FavorisScreen({super.key});
 
   @override
+  State<FavorisScreen> createState() => _FavorisScreenState();
+}
+
+class _FavorisScreenState extends State<FavorisScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<FavoritesProvider>().syncFromApi();
+    });
+  }
+
+  List<Restaurant> _resolveList(FavoritesProvider fav, RestaurantsProvider catalog) {
+    if (fav.favoriteRestaurants.isNotEmpty) return fav.favoriteRestaurants;
+    return catalog.restaurants.where((r) => fav.isFavorite(r.id)).toList();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
     final fav = context.watch<FavoritesProvider>();
-    final favoris = mockRestaurants.where((r) => fav.isFavorite(r.id)).toList();
+    final catalog = context.watch<RestaurantsProvider>();
+    final favoris = _resolveList(fav, catalog);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Mes favoris')),
-      body: favoris.isEmpty
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.favorite_border_rounded, size: 56, color: Colors.grey.shade400),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Aucun favori pour le moment',
-                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: Colors.grey.shade800),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Appuyez sur le cœur sur un restaurant à l’accueil pour l’ajouter ici.',
-                      style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    FilledButton(
-                      onPressed: () => context.go(AppRoutes.home),
-                      child: const Text('Découvrir les restaurants'),
-                    ),
-                  ],
-                ),
-              ),
+      body: !auth.isConnected
+          ? const EmptyState(
+              title: 'Connexion requise',
+              subtitle: 'Connectez-vous pour synchroniser vos restaurants favoris.',
+              icon: Icons.favorite_border_rounded,
             )
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: favoris.length,
-              itemBuilder: (_, i) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: RestaurantCard(
-                  restaurant: favoris[i],
-                  onTap: () => context.push('${AppRoutes.restaurant}/${favoris[i].id}'),
-                ),
-              ),
-            ),
-      bottomNavigationBar: FastEatBottomNavBar(
-        currentIndex: 1,
-        onTap: (i) {
-          if (i == 0) context.go(AppRoutes.home);
-          if (i == 2) context.go(AppRoutes.historique);
-          if (i == 3) context.go(AppRoutes.profil);
-        },
-      ),
+          : fav.isLoading && favoris.isEmpty
+              ? const Center(child: CircularProgressIndicator())
+              : favoris.isEmpty
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const EmptyState(
+                              title: 'Aucun favori',
+                              subtitle: 'Appuyez sur le cœur sur un restaurant à l\'accueil.',
+                              icon: Icons.favorite_border_rounded,
+                            ),
+                            const SizedBox(height: 16),
+                            FilledButton(
+                              onPressed: () => context.go(AppRoutes.home),
+                              child: const Text('Découvrir les restaurants'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: () => fav.syncFromApi(),
+                      child: ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.all(16),
+                        itemCount: favoris.length,
+                        itemBuilder: (_, i) {
+                          final r = favoris[i];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: RestaurantCard(
+                              restaurant: r,
+                              onTap: () => context.push('${AppRoutes.restaurant}/${r.id}'),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
     );
   }
 }

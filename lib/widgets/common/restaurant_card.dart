@@ -68,20 +68,50 @@ class RestaurantCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(restaurant.nom, style: Theme.of(context).textTheme.titleLarge),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          restaurant.nom,
+                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: AppColors.textPrimary),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 4),
-                  Text('${restaurant.cuisine} • ${restaurant.quartier}', style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
-                  const SizedBox(height: 8),
                   Row(
                     children: [
-                      const Icon(Icons.access_time_filled_rounded, color: AppColors.primary, size: 14),
-                      Text(' ${restaurant.tempsEstime}'),
+                      const Icon(Icons.star_rounded, color: AppColors.accent, size: 14),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${restaurant.note}',
+                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: AppColors.textPrimary),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '• ${restaurant.cuisine}',
+                        style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      const Icon(Icons.access_time_rounded, color: AppColors.textSecondary, size: 14),
+                      const SizedBox(width: 4),
+                      Text(
+                        restaurant.tempsEstime,
+                        style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      ),
                       const Spacer(),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: const Color(0xFFEAF7EE),
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
                           restaurant.livraison ? 'Livraison' : 'Sur place',

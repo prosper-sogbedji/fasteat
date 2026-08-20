@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../widgets/common/image_fallback.dart';
 
-class ChatPlaceholderScreen extends StatelessWidget {
-  const ChatPlaceholderScreen({super.key});
+class ChatScreen extends StatelessWidget {
+  const ChatScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

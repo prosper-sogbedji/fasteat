@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:fast_eat/widgets/common/app_feedback.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../app_routes.dart';
+import '../../models/commande.dart';
 import '../../providers/flow_provider.dart';
 import '../../providers/panier_provider.dart';
 import '../../theme/app_theme.dart';
-import '../../widgets/common/bottom_nav_bar.dart';
 import '../../widgets/common/formatters.dart';
 import '../../widgets/common/image_fallback.dart';
 
@@ -18,7 +20,9 @@ class PanierProgrammeeScreen extends StatelessWidget {
     final panier = context.watch<PanierProvider>();
     final flow = context.watch<FlowProvider>();
     const horaires = ['12:00', '12:30', '13:00', '13:30', '14:00'];
-    int total = panier.sousTotal;
+    final isLivraison = flow.modeConsommation == ModeConsommation.livraison;
+    final fraisLivraison = isLivraison ? flow.fraisLivraison : 0;
+    final total = panier.sousTotal + fraisLivraison;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Votre Panier'), centerTitle: true),
@@ -44,32 +48,87 @@ class PanierProgrammeeScreen extends StatelessWidget {
                 )
                 .toList(),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
+          const Text('Mode de consommation', style: TextStyle(fontWeight: FontWeight.w700)),
+          const SizedBox(height: 8),
+          SegmentedButton<ModeConsommation>(
+            segments: const [
+              ButtonSegment(value: ModeConsommation.surPlace, icon: Icon(Icons.restaurant), label: Text('Sur place')),
+              ButtonSegment(value: ModeConsommation.aEmporter, icon: Icon(Icons.takeout_dining), label: Text('À emporter')),
+              ButtonSegment(value: ModeConsommation.livraison, icon: Icon(Icons.delivery_dining), label: Text('Livraison')),
+            ],
+            selected: {if (flow.modeConsommation != null) flow.modeConsommation!},
+            onSelectionChanged: (set) => context.read<FlowProvider>().setModeConsommation(set.first),
+            emptySelectionAllowed: true,
+            showSelectedIcon: false,
+            style: SegmentedButton.styleFrom(
+              selectedBackgroundColor: AppColors.primary.withValues(alpha: 0.1),
+              selectedForegroundColor: AppColors.primary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          if (isLivraison) ...[
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.location_on_outlined, size: 18),
+                        const SizedBox(width: 6),
+                        const Expanded(child: Text('Adresse de livraison', style: TextStyle(fontWeight: FontWeight.w700))),
+                        TextButton(onPressed: () {}, child: const Text('Modifier')),
+                      ],
+                    ),
+                    TextFormField(
+                      initialValue: flow.adresseLivraison,
+                      decoration: const InputDecoration(hintText: 'Quartier Haie Vive, Rue 402'),
+                      onChanged: (v) => context.read<FlowProvider>().setAdresse(v),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
           TextField(
             decoration: const InputDecoration(hintText: 'Instructions speciales'),
             maxLines: 2,
           ),
           const SizedBox(height: 16),
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text('Sous-total'), Text(fcfa(total))]),
-          const SizedBox(height: 4),
-          const Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Frais de service'), Text('300 FCFA')]),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text('Sous-total'), Text(fcfa(panier.sousTotal))]),
+          if (isLivraison)
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text('Frais de livraison'), Text(fcfa(fraisLivraison))]),
           const Divider(),
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text('Total', style: TextStyle(fontWeight: FontWeight.w700)), Text(fcfa(total + 300), style: const TextStyle(fontWeight: FontWeight.w700, color: Color(0xFFC8102E)))]),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text('Total', style: TextStyle(fontWeight: FontWeight.w700)), Text(fcfa(total), style: const TextStyle(fontWeight: FontWeight.w700, color: Color(0xFFC8102E)))]),
           const SizedBox(height: 18),
           FilledButton(
             style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-            onPressed: () => context.push(AppRoutes.paiementChoix),
-            child: const Text('Proceder au paiement'),
+            onPressed: () async {
+              if (panier.lignes.isEmpty) {
+                AppFeedback.info(context, 'Ajoutez au moins un plat avant de continuer.');
+                return;
+              }
+              if (flow.heureRecuperation.trim().isEmpty) {
+                AppFeedback.info(context, 'Veuillez choisir une heure de récupération.');
+                return;
+              }
+              if (flow.modeConsommation == null) {
+                AppFeedback.info(context, 'Veuillez choisir un mode de consommation.');
+                return;
+              }
+              if (flow.modeConsommation == ModeConsommation.livraison && flow.adresseLivraison.trim().isEmpty) {
+                AppFeedback.info(context, 'Veuillez entrer une adresse de livraison.');
+                return;
+              }
+              await context.read<FlowProvider>().setMode(ModeCommande.programmee);
+              if (!context.mounted) return;
+              context.push(AppRoutes.paiementChoix);
+            },
+            child: const Text('Procéder au paiement'),
           ),
         ],
-      ),
-      bottomNavigationBar: FastEatBottomNavBar(
-        currentIndex: 2,
-        onTap: (i) {
-          if (i == 0) context.go(AppRoutes.home);
-          if (i == 1) context.go(AppRoutes.favoris);
-          if (i == 3) context.go(AppRoutes.profil);
-        },
       ),
     );
   }

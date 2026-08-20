@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "500582260464",
+    "project_id": "fasteat-benin",
+    "storage_bucket": "fasteat-benin.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:500582260464:android:a2398c31cec6f26ad22c35",
+        "android_client_info": {
+          "package_name": "com.fasteat.benin.fast_eat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxTFanlHmutDTaR6G-Q0TWAdxTYMFxSTg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

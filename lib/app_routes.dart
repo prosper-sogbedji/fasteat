@@ -16,12 +16,21 @@ abstract final class AppRoutes {
   static const paiementProcessing = '/paiement/processing';
   static const commandeConfirmee = '/commande/confirmee';
   static const suivi = '/suivi';
-  static const historique = '/historique';
+  static const historique = '/historique'; // keeping for compatibility or internal use if needed
+  static const activite = '/activite';
   static const avis = '/avis';
   static const chat = '/chat';
   static const profil = '/profil';
   static const parrainage = '/parrainage';
   static const mesInfos = '/mes-infos';
-  static const favoris = '/favoris';
+  static const adresses = '/adresses';
+  static const parametres = '/parametres';
+  static const aide = '/aide';
+  static const mesRestaurants = '/mes-restaurants';
+  // Kept for backward compat (redirects to mesRestaurants)
+  static const favoris = '/mes-restaurants';
   static const notifications = '/notifications';
+  // Reservations
+  static const reservations = '/reservations';
+  static const nouvelleReservation = '/reservations/nouvelle';
 }
